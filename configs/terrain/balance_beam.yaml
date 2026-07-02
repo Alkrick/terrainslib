@@ -1,0 +1,12 @@
+defaults:
+  - defaults
+  - _self_
+
+type: balance_beam
+
+# Beam
+beam_width: 0.30
+beam_height: 0.0
+
+# Pit
+pit_depth: -0.40

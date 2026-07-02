@@ -1,0 +1,5 @@
+defaults:
+  - terrain: stairs
+  - _self_
+
+seed: 0

@@ -1,0 +1,13 @@
+# configs/terrain/stepping_stones.yaml
+
+defaults:
+  -  defaults
+  - _self_
+
+type: stepping_stones
+
+stone_size: [0.4, 0.4]
+spacing: [0.3, 0.3]
+
+stone_height: 0.0
+base_height: -0.25

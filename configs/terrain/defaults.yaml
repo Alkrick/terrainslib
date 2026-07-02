@@ -1,0 +1,9 @@
+width: 10.0
+length: 10.0
+
+horizontal_scale: 0.05
+vertical_scale: 0.02
+
+roughness:
+  enabled: true
+  amplitude: 1
