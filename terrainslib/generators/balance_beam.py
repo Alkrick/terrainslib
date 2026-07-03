@@ -1,29 +1,24 @@
+from __future__ import annotations
+
 import numpy as np
 
-from terrainslib.common import Terrain
+from dataclasses import dataclass, field
+from typing import Callable
+
+from terrainslib.common import Terrain, TerrainCfg
 from terrainslib.common import utils
 
 from .registry import register_terrain
 
+def _balance_beam(cfg: 'BalanceBeamCfg') -> Terrain:
 
-@register_terrain("balance_beam")
-def balance_beam(
-    width,
-    length,
-    horizontal_scale,
-    vertical_scale,
-    beam_width,
-    pit_depth,
-    beam_height=0.0,
-) -> Terrain:
+    nx = utils.meters_to_pixels(cfg.width, cfg.horizontal_scale)
+    ny = utils.meters_to_pixels(cfg.length, cfg.horizontal_scale)
 
-    nx = utils.meters_to_pixels(width, horizontal_scale)
-    ny = utils.meters_to_pixels(length, horizontal_scale)
+    beam_px = utils.meters_to_pixels(cfg.beam_width, cfg.horizontal_scale)
 
-    beam_px = utils.meters_to_pixels(beam_width, horizontal_scale)
-
-    beam_h = utils.meters_to_height(beam_height, vertical_scale)
-    pit_h = utils.meters_to_height(pit_depth, vertical_scale)
+    beam_h = utils.meters_to_height(cfg.beam_height, cfg.vertical_scale)
+    pit_h = utils.meters_to_height(cfg.pit_depth, cfg.vertical_scale)
 
     height = _build_balance_beam(
         nx,
@@ -35,9 +30,8 @@ def balance_beam(
 
     return Terrain(
         height=height,
-        horizontal_scale=horizontal_scale,
-        vertical_scale=vertical_scale,
-        metadata={"type": "balance_beam"},
+        cfg=cfg,
+        metadata={"name": "balance_beam"},
     )
 
 
@@ -57,3 +51,18 @@ def _build_balance_beam(
     height[:, x0:x1] = beam_h
 
     return height
+
+
+@register_terrain("balance_beam")
+@dataclass
+class BalanceBeamCfg(TerrainCfg):
+    
+    beam_width: float = 0.30
+    beam_height: float = 0.0
+
+    # Pit
+    pit_depth: float = -0.40
+    
+    @property
+    def func(self):
+        return _balance_beam

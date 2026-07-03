@@ -1,38 +1,36 @@
+from __future__ import annotations
+
 import numpy as np
 
-from terrainslib.common import Terrain
+from dataclasses import dataclass, field
+from typing import Callable
+
+from terrainslib.common import Terrain, TerrainCfg, build_centered_layout
 from terrainslib.common import utils
 
 from .registry import register_terrain
 
 
-@register_terrain("narrow_corridor")
-def narrow_corridor(
-    width,
-    length,
-    horizontal_scale,
-    vertical_scale,
-    corridor_width,
-    wall_height,
-    floor_height=0.0,
+def _narrow_corridor(
+    cfg: 'NarrowCorridorCfg'
 ) -> Terrain:
 
-    nx = utils.meters_to_pixels(width, horizontal_scale)
-    ny = utils.meters_to_pixels(length, horizontal_scale)
+    nx = utils.meters_to_pixels(cfg.width, cfg.horizontal_scale)
+    ny = utils.meters_to_pixels(cfg.length, cfg.horizontal_scale)
 
     corridor_px = utils.meters_to_pixels(
-        corridor_width,
-        horizontal_scale,
+        cfg.corridor_width,
+        cfg.horizontal_scale,
     )
 
     wall_h = utils.meters_to_height(
-        wall_height,
-        vertical_scale,
+        cfg.wall_height,
+        cfg.vertical_scale,
     )
 
     floor_h = utils.meters_to_height(
-        floor_height,
-        vertical_scale,
+        cfg.floor_height,
+        cfg.vertical_scale,
     )
 
     height = _build_narrow_corridor(
@@ -45,9 +43,8 @@ def narrow_corridor(
 
     return Terrain(
         height=height,
-        horizontal_scale=horizontal_scale,
-        vertical_scale=vertical_scale,
-        metadata={"type": "narrow_corridor"},
+        cfg=cfg,
+        metadata={"name": "narrow_corridor"},
     )
 
 
@@ -67,3 +64,20 @@ def _build_narrow_corridor(
     height[:, nx - wall_width :] = wall_h
 
     return height
+
+
+@register_terrain("narrow_corridor")
+@dataclass
+class NarrowCorridorCfg(TerrainCfg):
+    # Corridor
+    corridor_width:float = 0.50
+
+    # Walls
+    wall_height:float = 0.50
+
+    # Floor
+    floor_height:float = 0.0
+    
+    @property
+    def func(self):
+        return _narrow_corridor

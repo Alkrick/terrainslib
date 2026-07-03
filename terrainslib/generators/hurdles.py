@@ -1,31 +1,28 @@
+from __future__ import annotations
+
 import numpy as np
 
-from terrainslib.common import Terrain, build_centered_layout
+from dataclasses import dataclass, field
+from typing import Callable
+
+
+from terrainslib.common import Terrain, TerrainCfg, build_centered_layout
 from terrainslib.common import utils
 
 from .registry import register_terrain
 
-
-@register_terrain("hurdles")
-def hurdles(
-    width,
-    length,
-    horizontal_scale,
-    vertical_scale,
-    hurdle_width,
-    hurdle_height,
-    spacing,
-    base_height=0.0,
+def _hurdles(
+    cfg: 'HurdlesCfg'
 ) -> Terrain:
 
-    nx = utils.meters_to_pixels(width, horizontal_scale)
-    ny = utils.meters_to_pixels(length, horizontal_scale)
+    nx = utils.meters_to_pixels(cfg.width, cfg.horizontal_scale)
+    ny = utils.meters_to_pixels(cfg.length, cfg.horizontal_scale)
 
-    hurdle_px = utils.meters_to_pixels(hurdle_width, horizontal_scale)
-    spacing_px = utils.meters_to_pixels(spacing, horizontal_scale)
+    hurdle_px = utils.meters_to_pixels(cfg.hurdle_width, cfg.horizontal_scale)
+    spacing_px = utils.meters_to_pixels(cfg.spacing, cfg.horizontal_scale)
 
-    hurdle_h = utils.meters_to_height(hurdle_height, vertical_scale)
-    base_h = utils.meters_to_height(base_height, vertical_scale)
+    hurdle_h = utils.meters_to_height(cfg.hurdle_height, cfg.vertical_scale)
+    base_h = utils.meters_to_height(cfg.base_height, cfg.vertical_scale)
 
     height = _build_hurdle_course(
         nx,
@@ -38,9 +35,8 @@ def hurdles(
 
     return Terrain(
         height=height,
-        horizontal_scale=horizontal_scale,
-        vertical_scale=vertical_scale,
-        metadata={"type": "hurdles"},
+        cfg=cfg,
+        metadata={"name": "hurdles"},
     )
 
 
@@ -71,3 +67,17 @@ def _build_hurdle_course(
         height[y0:y1, :] = hurdle_h
 
     return height
+
+
+@register_terrain("hurdles")
+@dataclass
+class HurdlesCfg(TerrainCfg):
+
+    hurdle_width: float = 0.3
+    hurdle_height: float = 0.2
+    spacing: float = 3.0
+    base_height: float = 0.0
+    
+    @property
+    def func(self):
+        return _hurdles

@@ -4,10 +4,9 @@ defaults:
   -  defaults
   - _self_
 
-type: stairs
+name: stairs
 
 step_width: 0.5
 step_height: 0.2
 
-base_height: 0.0
 direction: y

@@ -49,12 +49,12 @@ def terrain_to_mesh(terrain: Terrain) -> Mesh:
     # Vertices
     # ------------------------------------------------------------------
 
-    xs = np.arange(nx, dtype=np.float32) * terrain.horizontal_scale
-    ys = np.arange(ny, dtype=np.float32) * terrain.horizontal_scale
+    xs = np.arange(nx, dtype=np.float32) * terrain.cfg.horizontal_scale
+    ys = np.arange(ny, dtype=np.float32) * terrain.cfg.horizontal_scale
 
     X, Y = np.meshgrid(xs, ys)
 
-    Z = height * terrain.vertical_scale
+    Z = height * terrain.cfg.vertical_scale
 
     vertices = np.column_stack(
         (

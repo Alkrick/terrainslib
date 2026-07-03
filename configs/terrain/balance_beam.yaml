@@ -2,7 +2,7 @@ defaults:
   - defaults
   - _self_
 
-type: balance_beam
+name: balance_beam
 
 # Beam
 beam_width: 0.30

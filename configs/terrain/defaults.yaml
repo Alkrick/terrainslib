@@ -4,6 +4,10 @@ length: 10.0
 horizontal_scale: 0.05
 vertical_scale: 0.02
 
-roughness:
-  enabled: true
-  amplitude: 1
+base_height: 0.0
+
+post:
+  roughness:
+    enabled: true
+    amplitude: 1
+    seed: ${seed}

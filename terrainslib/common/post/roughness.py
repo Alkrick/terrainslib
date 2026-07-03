@@ -19,17 +19,17 @@ class RoughnessConfig:
 
 def apply_roughness(
     terrain: Terrain,
-    cfg: RoughnessConfig,
+    cfg,
 ) -> Terrain:
 
-    if not cfg.enabled:
+    if not cfg["enabled"]:
         return terrain
 
-    rng = np.random.default_rng(cfg.seed)
+    rng = np.random.default_rng(cfg["seed"])
 
     noise = rng.normal(
         loc=0.0,
-        scale=cfg.amplitude,
+        scale=cfg["amplitude"],
         size=terrain.height.shape,
     )
 
@@ -40,12 +40,11 @@ def apply_roughness(
 
     return Terrain(
         height=new_height,
-        horizontal_scale=terrain.horizontal_scale,
-        vertical_scale=terrain.vertical_scale,
+        cfg=terrain.cfg,
         origin=terrain.origin,
         metadata={
             **terrain.metadata,
-            "roughness": cfg.__dict__,
+            "roughness": cfg,
         },
     )
     

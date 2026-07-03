@@ -4,12 +4,9 @@ defaults:
   -  defaults
   - _self_
 
-type: hurdles
+name: hurdles
 
 # Hurdles
 hurdle_width: 0.30
 hurdle_height: 0.20
 spacing: 3.0
-
-# Base terrain
-base_height: 0.0
