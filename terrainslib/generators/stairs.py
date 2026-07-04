@@ -14,17 +14,41 @@ from .registry import register_terrain
 def _stairs(
     cfg: 'StairsCfg'
 ) -> Terrain:
-
-    nx = utils.meters_to_pixels(cfg.width, cfg.horizontal_scale)
-    ny = utils.meters_to_pixels(cfg.length, cfg.horizontal_scale)
+    
+    height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
     step_px = max(1, utils.meters_to_pixels(cfg.step_width, cfg.horizontal_scale))
     step_h = utils.meters_to_height(cfg.step_height, cfg.vertical_scale)
-    base_h = utils.meters_to_height(cfg.base_height, cfg.vertical_scale)
 
-    height = np.full((ny, nx), base_h, dtype=np.float32)
+    n_steps = _build_stairs(
+        inner,
+        cfg.direction,
+        step_px,
+        step_h,
+        base_h
+    )
 
-    if cfg.direction == "y":
+    return Terrain(
+        height=height,
+        cfg=cfg,
+        metadata={
+            "name": "stairs",
+            "n_steps": int(n_steps),
+            "direction": cfg.direction,
+        },
+    )
+
+
+def _build_stairs(
+    height,
+    direction,
+    step_px,
+    step_h,
+    base_h
+):
+    nx, ny = height.shape
+    
+    if direction == "y":
 
         n_steps, offset_y, pitch = utils.compute_centered_tiling(
             ny, step_px, 0
@@ -36,7 +60,7 @@ def _stairs(
 
             height[y0:y1, :] = base_h + i * step_h
 
-    elif cfg.direction == "x":
+    elif direction == "x":
 
         n_steps, offset_x, pitch = utils.compute_centered_tiling(
             nx, step_px, 0
@@ -50,17 +74,8 @@ def _stairs(
 
     else:
         raise ValueError("direction must be 'x' or 'y'")
-
-    return Terrain(
-        height=height,
-        cfg=cfg,
-        metadata={
-            "name": "stairs",
-            "n_steps": int(n_steps),
-            "direction": cfg.direction,
-        },
-    )
-
+    
+    return n_steps
 
 @register_terrain("stairs")
 @dataclass

@@ -15,18 +15,14 @@ def _hurdles(
     cfg: 'HurdlesCfg'
 ) -> Terrain:
 
-    nx = utils.meters_to_pixels(cfg.width, cfg.horizontal_scale)
-    ny = utils.meters_to_pixels(cfg.length, cfg.horizontal_scale)
-
+    height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
+    
     hurdle_px = utils.meters_to_pixels(cfg.hurdle_width, cfg.horizontal_scale)
     spacing_px = utils.meters_to_pixels(cfg.spacing, cfg.horizontal_scale)
-
     hurdle_h = utils.meters_to_height(cfg.hurdle_height, cfg.vertical_scale)
-    base_h = utils.meters_to_height(cfg.base_height, cfg.vertical_scale)
 
-    height = _build_hurdle_course(
-        nx,
-        ny,
+    _build_hurdle_course(
+        inner,
         hurdle_px,
         spacing_px,
         hurdle_h,
@@ -41,14 +37,17 @@ def _hurdles(
 
 
 def _build_hurdle_course(
-    nx,
-    ny,
+    height,
     hurdle_px,
     spacing_px,
     hurdle_h,
     base_h,
 ):
 
+    nx, ny = height.shape
+    
+    height[:,:] = base_h
+    
     layout = build_centered_layout(
         total_x=1,
         total_y=ny,
@@ -57,8 +56,6 @@ def _build_hurdle_course(
         spacing_y=spacing_px,
     )
 
-    height = np.full((ny, nx), base_h, dtype=np.float32)
-
     for iy in range(layout.n_y):
 
         y0 = layout.offset_y + iy * layout.pitch_y
@@ -66,7 +63,6 @@ def _build_hurdle_course(
 
         height[y0:y1, :] = hurdle_h
 
-    return height
 
 
 @register_terrain("hurdles")

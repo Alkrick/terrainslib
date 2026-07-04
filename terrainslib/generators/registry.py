@@ -1,15 +1,15 @@
-from typing import Type
-
-from terrainslib.common import TerrainCfg
-
-REGISTRY: dict[str, Type[TerrainCfg]] = {}
+from typing import TypeVar, Callable, cast
 
 
-def register_terrain(name: str):
-    def decorator(cls: Type[TerrainCfg]):
+T = TypeVar("T")
+
+REGISTRY: dict[str, T] = {}
+
+
+def register_terrain(name: str) -> Callable[[T], T]:
+    def decorator(cls: T) -> T:
         if name in REGISTRY:
             raise ValueError(f"Terrain '{name}' already registered")
-
         cls.name = name
         REGISTRY[name] = cls
         return cls

@@ -6,6 +6,9 @@ defaults:
 
 name: hurdles
 
+border_width: 1.0
+border_height: ${terrain.base_height}
+
 # Hurdles
 hurdle_width: 0.30
 hurdle_height: 0.20

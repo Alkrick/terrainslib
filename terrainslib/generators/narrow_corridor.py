@@ -15,8 +15,7 @@ def _narrow_corridor(
     cfg: 'NarrowCorridorCfg'
 ) -> Terrain:
 
-    nx = utils.meters_to_pixels(cfg.width, cfg.horizontal_scale)
-    ny = utils.meters_to_pixels(cfg.length, cfg.horizontal_scale)
+    height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
     corridor_px = utils.meters_to_pixels(
         cfg.corridor_width,
@@ -33,9 +32,8 @@ def _narrow_corridor(
         cfg.vertical_scale,
     )
 
-    height = _build_narrow_corridor(
-        nx,
-        ny,
+    _build_narrow_corridor(
+        inner,
         corridor_px,
         wall_h,
         floor_h,
@@ -49,14 +47,14 @@ def _narrow_corridor(
 
 
 def _build_narrow_corridor(
-    nx,
-    ny,
+    height,
     corridor_px,
     wall_h,
     floor_h,
 ):
+    nx, ny = height.shape
 
-    height = np.full((ny, nx), floor_h, dtype=np.float32)
+    height[:,:] = floor_h
 
     wall_width = (nx - corridor_px) // 2
 

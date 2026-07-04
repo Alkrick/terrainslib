@@ -4,6 +4,10 @@ defaults:
 
 name: balance_beam
 
+base_height: 0.0
+border_width: 1.0
+border_height: ${terrain.base_height}
+
 # Beam
 beam_width: 0.30
 beam_height: 0.0

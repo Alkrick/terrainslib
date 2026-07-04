@@ -6,6 +6,9 @@ defaults:
 
 name: stairs
 
+border_width: 1.0
+border_height: ${terrain.base_height}
+
 step_width: 0.5
 step_height: 0.2
 

@@ -4,6 +4,9 @@ defaults:
 
 name: narrow_corridor
 
+border_width: 1.0
+border_height: ${terrain.base_height}
+
 # Corridor
 corridor_width: 0.50
 

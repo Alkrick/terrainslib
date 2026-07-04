@@ -1,5 +1,10 @@
 import numpy as np
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .terrain_cfg import TerrainCfg
+
 def meters_to_pixels(length, scale):
     return int(np.round(length / scale))
 
@@ -32,3 +37,28 @@ def compute_centered_tiling(
     start_offset = leftover // 2
 
     return n, start_offset, pitch
+
+def create_terrain_grid(cfg: "TerrainCfg"):
+    nx = meters_to_pixels(cfg.width, cfg.horizontal_scale)
+    ny = meters_to_pixels(cfg.length, cfg.horizontal_scale)
+    base_h = meters_to_height(cfg.base_height, cfg.vertical_scale)
+
+    base = np.full((ny, nx), base_h, dtype=np.float32)
+
+    border_w = meters_to_pixels(cfg.border_width, cfg.horizontal_scale)
+    border_h = meters_to_height(cfg.border_height, cfg.vertical_scale)
+
+    if border_w <= 0.0:
+        pass
+    else:
+        base[:border_w, :] = border_h
+        base[-border_w:, :] = border_h
+        base[:, :border_w] = border_h
+        base[:, -border_w:] = border_h
+
+    inner = base[
+        border_w:ny-border_w,
+        border_w:nx-border_w,
+    ]
+
+    return base, inner, nx, ny, base_h

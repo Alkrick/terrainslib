@@ -11,12 +11,8 @@ from terrainslib.common import utils
 from .registry import register_terrain
 
 
-def _stepping_stones(
-    cfg :'SteppingStonesCfg'
-) -> Terrain:
-
-    nx = utils.meters_to_pixels(cfg.width, cfg.horizontal_scale)
-    ny = utils.meters_to_pixels(cfg.length, cfg.horizontal_scale)
+def _stepping_stones(cfg: "SteppingStonesCfg") -> Terrain:
+    height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
     stone_w = utils.meters_to_pixels(cfg.stone_size[0], cfg.horizontal_scale)
     stone_l = utils.meters_to_pixels(cfg.stone_size[1], cfg.horizontal_scale)
@@ -25,11 +21,9 @@ def _stepping_stones(
     gap_l = utils.meters_to_pixels(cfg.spacing[1], cfg.horizontal_scale)
 
     stone_h = utils.meters_to_height(cfg.stone_height, cfg.vertical_scale)
-    base_h = utils.meters_to_height(cfg.base_height, cfg.vertical_scale)
 
-    height = _build_stepping_stones(
-        nx,
-        ny,
+    _build_stepping_stones(
+        inner,
         stone_w,
         stone_l,
         gap_w,
@@ -46,8 +40,7 @@ def _stepping_stones(
 
 
 def _build_stepping_stones(
-    nx,
-    ny,
+    height,
     stone_w,
     stone_l,
     gap_w,
@@ -55,6 +48,10 @@ def _build_stepping_stones(
     stone_h,
     base_h,
 ):
+    nx, ny = height.shape
+
+    height[:, :] = base_h
+
     layout = build_centered_layout(
         total_x=nx,
         total_y=ny,
@@ -63,8 +60,6 @@ def _build_stepping_stones(
         spacing_x=gap_w,
         spacing_y=gap_l,
     )
-
-    height = np.full((ny, nx), base_h, dtype=np.float32)
 
     for iy in range(layout.n_y):
         y0 = layout.offset_y + iy * layout.pitch_y
@@ -76,19 +71,17 @@ def _build_stepping_stones(
 
             height[y0:y1, x0:x1] = stone_h
 
-    return height
-
 
 @register_terrain("stepping_stones")
 @dataclass
 class SteppingStonesCfg(TerrainCfg):
 
-    stone_size = [0.4, 0.4]
-    spacing = [0.3, 0.3]
+    stone_size: tuple[float, float] = (0.4, 0.4)
+    spacing: tuple[float, float] = (0.3, 0.3)
 
-    stone_height:float = 0.0
-    base_height:float = -0.25
-    
+    stone_height: float = 0.0
+    base_height: float = -0.25
+
     @property
     def func(self):
         return _stepping_stones
