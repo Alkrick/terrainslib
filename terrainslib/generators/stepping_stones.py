@@ -3,7 +3,6 @@ from __future__ import annotations
 import numpy as np
 
 from dataclasses import dataclass, field
-from typing import Callable
 
 from terrainslib.common import Terrain, TerrainCfg, build_centered_layout
 from terrainslib.common import utils
@@ -11,16 +10,17 @@ from terrainslib.common import utils
 from .registry import register_terrain
 
 
-def _stepping_stones(cfg: "SteppingStonesCfg") -> Terrain:
+def _stepping_stones(cfg: "SteppingStonesCfg", difficulty) -> Terrain:
     height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
-    stone_w = utils.meters_to_pixels(cfg.stone_size[0], cfg.horizontal_scale)
-    stone_l = utils.meters_to_pixels(cfg.stone_size[1], cfg.horizontal_scale)
+    stone_w = utils.meters_to_pixels(cfg.stone_w.at(difficulty), cfg.horizontal_scale)
+    stone_l = utils.meters_to_pixels(cfg.stone_l.at(difficulty), cfg.horizontal_scale)
 
-    gap_w = utils.meters_to_pixels(cfg.spacing[0], cfg.horizontal_scale)
-    gap_l = utils.meters_to_pixels(cfg.spacing[1], cfg.horizontal_scale)
+    gap_w = utils.meters_to_pixels(cfg.spacing_w.at(difficulty), cfg.horizontal_scale)
+    gap_l = utils.meters_to_pixels(cfg.spacing_l.at(difficulty), cfg.horizontal_scale)
 
     stone_h = utils.meters_to_height(cfg.stone_height, cfg.vertical_scale)
+    pit_h = utils.meters_to_height(cfg.pit_height, cfg.vertical_scale)
 
     _build_stepping_stones(
         inner,
@@ -30,10 +30,18 @@ def _stepping_stones(cfg: "SteppingStonesCfg") -> Terrain:
         gap_l,
         stone_h,
         base_h,
+        pit_h,
     )
+    
+    x = int(0.5*nx) 
+    y = int(0.05*ny)
+    z = height[x,y]
+    
+    origin = np.array([x,y,z])
 
     return Terrain(
         height=height,
+        origin=origin,
         cfg=cfg,
         metadata={"name": "stepping_stones"},
     )
@@ -47,40 +55,44 @@ def _build_stepping_stones(
     gap_l,
     stone_h,
     base_h,
+    pit_h,
 ):
     nx, ny = height.shape
 
-    height[:, :] = base_h
+    height[:, :] = pit_h
 
     layout = build_centered_layout(
         total_x=nx,
         total_y=ny,
-        cell_x=stone_w,
-        cell_y=stone_l,
+        feature_x=stone_w,
+        feature_y=stone_l,
         spacing_x=gap_w,
         spacing_y=gap_l,
     )
-
-    for iy in range(layout.n_y):
-        y0 = layout.offset_y + iy * layout.pitch_y
+    
+    for x0,y0 in layout:
+        y0 = int(y0 + np.random.uniform(0,5))
+        x0 = int(x0 + np.random.uniform(0,5))
+        
         y1 = y0 + stone_l
-
-        for ix in range(layout.n_x):
-            x0 = layout.offset_x + ix * layout.pitch_x
-            x1 = x0 + stone_w
-
-            height[y0:y1, x0:x1] = stone_h
+        x1 = x0 + stone_w
+        
+        height[y0:y1, x0:x1] = stone_h
 
 
 @register_terrain("stepping_stones")
 @dataclass
 class SteppingStonesCfg(TerrainCfg):
 
-    stone_size: tuple[float, float] = (0.4, 0.4)
-    spacing: tuple[float, float] = (0.3, 0.3)
+    stone_w: tuple[float, float] = field(default=(0.3, 0.3), metadata={"range":True})
+    stone_l: tuple[float, float] = field(default=(0.3, 0.3), metadata={"range":True})
+    spacing_w : tuple[float, float] = field(default=(0.3, 0.3), metadata={"range":True})
+    spacing_l : tuple[float, float] = field(default=(0.3, 0.3), metadata={"range":True})
 
     stone_height: float = 0.0
-    base_height: float = -0.25
+    base_height: float = 0.0
+    
+    pit_height: float = -0.25
 
     @property
     def func(self):

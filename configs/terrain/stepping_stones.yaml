@@ -6,8 +6,10 @@ defaults:
 
 name: stepping_stones
 
-stone_size: [0.3, 0.3]
-spacing: [0.15, 0.15]
+stone_w: [0.8, 0.3]
+stone_l: [0.8, 0.3]
+spacing_w: [0.05, 0.15]
+spacing_l: [0.05, 0.15]
 
 stone_height: 0.0
 base_height: -0.25

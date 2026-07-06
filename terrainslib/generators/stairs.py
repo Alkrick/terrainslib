@@ -1,35 +1,35 @@
-
 from __future__ import annotations
 
 import numpy as np
 
 from dataclasses import dataclass, field
-from typing import Callable
 
-from terrainslib.common import Terrain, TerrainCfg, build_centered_layout
+from terrainslib.common import Terrain, TerrainCfg
 from terrainslib.common import utils
 
 from .registry import register_terrain
 
-def _stairs(
-    cfg: 'StairsCfg'
-) -> Terrain:
-    
+
+def _stairs(cfg: "StairsCfg", difficulty) -> Terrain:
+
     height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
-    step_px = max(1, utils.meters_to_pixels(cfg.step_width, cfg.horizontal_scale))
-    step_h = utils.meters_to_height(cfg.step_height, cfg.vertical_scale)
-
-    n_steps = _build_stairs(
-        inner,
-        cfg.direction,
-        step_px,
-        step_h,
-        base_h
+    step_px = max(
+        1, utils.meters_to_pixels(cfg.step_width.at(difficulty), cfg.horizontal_scale)
     )
+    step_h = utils.meters_to_height(cfg.step_height.at(difficulty), cfg.vertical_scale)
+
+    n_steps = _build_stairs(inner, cfg.direction, step_px, step_h, base_h)
+
+    x = int(0.5 * nx)
+    y = int(0.05 * ny)
+    z = height[x, y]
+
+    origin = np.array([x, y, z])
 
     return Terrain(
         height=height,
+        origin=origin,
         cfg=cfg,
         metadata={
             "name": "stairs",
@@ -39,20 +39,12 @@ def _stairs(
     )
 
 
-def _build_stairs(
-    height,
-    direction,
-    step_px,
-    step_h,
-    base_h
-):
+def _build_stairs(height, direction, step_px, step_h, base_h):
     nx, ny = height.shape
-    
+
     if direction == "y":
 
-        n_steps, offset_y, pitch = utils.compute_centered_tiling(
-            ny, step_px, 0
-        )
+        n_steps, offset_y, pitch = utils.compute_centered_tiling(ny, step_px, 0)
 
         for i in range(n_steps):
             y0 = offset_y + i * pitch
@@ -62,9 +54,7 @@ def _build_stairs(
 
     elif direction == "x":
 
-        n_steps, offset_x, pitch = utils.compute_centered_tiling(
-            nx, step_px, 0
-        )
+        n_steps, offset_x, pitch = utils.compute_centered_tiling(nx, step_px, 0)
 
         for i in range(n_steps):
             x0 = offset_x + i * pitch
@@ -74,19 +64,20 @@ def _build_stairs(
 
     else:
         raise ValueError("direction must be 'x' or 'y'")
-    
+
     return n_steps
+
 
 @register_terrain("stairs")
 @dataclass
 class StairsCfg(TerrainCfg):
-    
-    step_width:float = 0.5
-    step_height:float = 0.2
 
-    base_height:float = 0.0
-    direction:str = "y"
-    
+    step_width: tuple[float, float] = field(default=(0.5, 0.5), metadata={"range":True})
+    step_height: tuple[float, float] = field(default=(0.2, 0.2), metadata={"range":True})
+
+    base_height: float = 0.0
+    direction: str = "y"
+
     @property
     def func(self):
         return _stairs

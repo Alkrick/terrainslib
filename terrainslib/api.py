@@ -30,5 +30,5 @@ def create_terrain(user_cfg):
 
     # STEP 4: rebuild terrain config cleanly
     terrain_cfg = terrain_cls(**cfg)
-
-    return terrain_cfg.generate()
+    terrain_cfg.convert()
+    return terrain_cfg.generate(0.9)
