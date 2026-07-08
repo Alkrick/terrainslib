@@ -31,6 +31,7 @@ def _stepping_stones(cfg: "SteppingStonesCfg", difficulty) -> Terrain:
         stone_h,
         base_h,
         pit_h,
+        cfg.randomize_pos
     )
     
     x = int(0.5*nx) 
@@ -56,6 +57,7 @@ def _build_stepping_stones(
     stone_h,
     base_h,
     pit_h,
+    randomize
 ):
     nx, ny = height.shape
 
@@ -71,8 +73,9 @@ def _build_stepping_stones(
     )
     
     for x0,y0 in layout:
-        y0 = int(y0 + np.random.uniform(0,5))
-        x0 = int(x0 + np.random.uniform(0,5))
+        if randomize:
+            y0 = int(y0 + np.random.uniform(0,5))
+            x0 = int(x0 + np.random.uniform(0,5))
         
         y1 = y0 + stone_l
         x1 = x0 + stone_w
@@ -93,6 +96,8 @@ class SteppingStonesCfg(TerrainCfg):
     base_height: float = 0.0
     
     pit_height: float = -0.25
+    
+    randomize_pos: bool = False
 
     @property
     def func(self):
