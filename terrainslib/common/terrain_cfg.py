@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field, fields
 from abc import abstractmethod
+from terrainslib.parameters import ParameterSpec
 
 from .post import post_processing
-from .range import Range
 
 
 @dataclass
@@ -28,14 +28,23 @@ class TerrainCfg:
     post: dict = field(default_factory=dict)
 
     def convert(self):
+        # for f in fields(self):
+        #     if not f.metadata.get("range", False):
+        #         continue
+
+        #     value = getattr(self, f.name)
+
+        #     if isinstance(value, (list, tuple)) and len(value) == 2:
+        #         setattr(self, f.name, Range(value[0], value[1]))
         for f in fields(self):
-            if not f.metadata.get("range", False):
+            param_cls = f.metadata.get("class")
+            if param_cls is None:
                 continue
 
             value = getattr(self, f.name)
 
-            if isinstance(value, (list, tuple)) and len(value) == 2:
-                setattr(self, f.name, Range(value[0], value[1]))
+            if not isinstance(value, ParameterSpec):
+                setattr(self, f.name, param_cls.from_config(value))
 
     @property
     @abstractmethod

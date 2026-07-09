@@ -1,10 +1,17 @@
+import os
+
+# Force X11 backend for Wayland compatibility
+os.environ["XDG_SESSION_TYPE"] = "x11"
+os.environ["GDK_BACKEND"] = "x11"
+os.environ["PYOPENGL_PLATFORM"] = "glx"
+
+
 import hydra
 from omegaconf import DictConfig
 
 
 from terrainslib.api import create_terrain
 from terrainslib.visualize import plot_heightmap, plot_3d_surface, draw_mesh
-
 
 
 @hydra.main(config_path="configs", config_name="config", version_base=None)

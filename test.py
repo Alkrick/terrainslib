@@ -14,7 +14,7 @@ def main(cfg: DictConfig):
         cfg.convert()
         terrain = cfg.generate(0.5)
         
-        plot_heightmap(terrain)
+        # plot_heightmap(terrain)
     
     
 

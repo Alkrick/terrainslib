@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 
 from terrainslib.common import Terrain, TerrainCfg
 from terrainslib.common import utils
+from terrainslib.parameters import *
 
 from .registry import register_terrain
 
@@ -15,11 +16,11 @@ def _balance_beam(cfg: "BalanceBeamCfg", difficulty: float) -> Terrain:
     height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
     beam_px = utils.meters_to_pixels(
-        cfg.beam_width.at(difficulty), cfg.horizontal_scale
+        cfg.beam_width.resolve(difficulty), cfg.horizontal_scale
     )
 
-    beam_h = utils.meters_to_height(cfg.beam_height.at(difficulty), cfg.vertical_scale)
-    pit_h = utils.meters_to_height(cfg.pit_depth, cfg.vertical_scale)
+    beam_h = utils.meters_to_height(cfg.beam_height.resolve(difficulty), cfg.vertical_scale)
+    pit_h = utils.meters_to_height(cfg.pit_height.resolve(difficulty), cfg.vertical_scale)
 
     _build_balance_beam(
         inner,
@@ -64,11 +65,11 @@ def _build_balance_beam(
 @dataclass
 class BalanceBeamCfg(TerrainCfg):
 
-    beam_width: tuple[float, float] = field(default=(0.3, 0.3), metadata={"range":True})
-    beam_height: tuple[float, float] = field(default=(0.3, 0.3), metadata={"range":True})
+    beam_width: tuple[float, float] = field(default=(0.3, 0.3), metadata={"class":Range})
+    beam_height: tuple[float, float] = field(default=(0.3, 0.3), metadata={"class":Range})
 
     # Pit
-    pit_depth: float = -0.40
+    pit_height: float = field(default=(-0.4), metadata={"class":Constant})
 
     @property
     def func(self):

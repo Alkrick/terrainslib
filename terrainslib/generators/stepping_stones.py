@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 
 from terrainslib.common import Terrain, TerrainCfg, build_centered_layout
 from terrainslib.common import utils
+from terrainslib.parameters import *
 
 from .registry import register_terrain
 
@@ -13,14 +14,14 @@ from .registry import register_terrain
 def _stepping_stones(cfg: "SteppingStonesCfg", difficulty) -> Terrain:
     height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
-    stone_w = utils.meters_to_pixels(cfg.stone_w.at(difficulty), cfg.horizontal_scale)
-    stone_l = utils.meters_to_pixels(cfg.stone_l.at(difficulty), cfg.horizontal_scale)
+    stone_w = utils.meters_to_pixels(cfg.stone_w.resolve(difficulty), cfg.horizontal_scale)
+    stone_l = utils.meters_to_pixels(cfg.stone_l.resolve(difficulty), cfg.horizontal_scale)
 
-    gap_w = utils.meters_to_pixels(cfg.spacing_w.at(difficulty), cfg.horizontal_scale)
-    gap_l = utils.meters_to_pixels(cfg.spacing_l.at(difficulty), cfg.horizontal_scale)
+    gap_w = utils.meters_to_pixels(cfg.spacing_w.resolve(difficulty), cfg.horizontal_scale)
+    gap_l = utils.meters_to_pixels(cfg.spacing_l.resolve(difficulty), cfg.horizontal_scale)
 
-    stone_h = utils.meters_to_height(cfg.stone_height, cfg.vertical_scale)
-    pit_h = utils.meters_to_height(cfg.pit_height, cfg.vertical_scale)
+    stone_h = utils.meters_to_height(cfg.stone_height.resolve(difficulty), cfg.vertical_scale)
+    pit_h = utils.meters_to_height(cfg.pit_height.resolve(difficulty), cfg.vertical_scale)
 
     _build_stepping_stones(
         inner,
@@ -31,7 +32,7 @@ def _stepping_stones(cfg: "SteppingStonesCfg", difficulty) -> Terrain:
         stone_h,
         base_h,
         pit_h,
-        cfg.randomize_pos
+        cfg.randomize_pos.resolve(difficulty)
     )
     
     x = int(0.5*nx) 
@@ -87,17 +88,16 @@ def _build_stepping_stones(
 @dataclass
 class SteppingStonesCfg(TerrainCfg):
 
-    stone_w: tuple[float, float] = field(default=(0.3, 0.3), metadata={"range":True})
-    stone_l: tuple[float, float] = field(default=(0.3, 0.3), metadata={"range":True})
-    spacing_w : tuple[float, float] = field(default=(0.3, 0.3), metadata={"range":True})
-    spacing_l : tuple[float, float] = field(default=(0.3, 0.3), metadata={"range":True})
+    stone_w: tuple[float, float] = field(default=(0.3, 0.3), metadata={"class":Range})
+    stone_l: tuple[float, float] = field(default=(0.3, 0.3), metadata={"class":Range})
+    spacing_w : tuple[float, float] = field(default=(0.3, 0.3), metadata={"class":Range})
+    spacing_l : tuple[float, float] = field(default=(0.3, 0.3), metadata={"class":Range})
 
-    stone_height: float = 0.0
-    base_height: float = 0.0
+    stone_height: float = field(default=0.0, metadata={"class":Constant})
     
-    pit_height: float = -0.25
+    pit_height: float = field(default=-0.4, metadata={"class":Constant})
     
-    randomize_pos: bool = False
+    randomize_pos: bool = field(default=False, metadata={"class": Constant})
 
     @property
     def func(self):

@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 
 from terrainslib.common import Terrain, TerrainCfg
 from terrainslib.common import utils
+from terrainslib.parameters import *
 
 from .registry import register_terrain
 
@@ -15,17 +16,12 @@ def _narrow_corridor(cfg: "NarrowCorridorCfg", difficulty) -> Terrain:
     height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
     corridor_px = utils.meters_to_pixels(
-        cfg.corridor_width.at(difficulty),
+        cfg.corridor_width.resolve(difficulty),
         cfg.horizontal_scale,
     )
 
     wall_h = utils.meters_to_height(
-        cfg.wall_height.at(difficulty),
-        cfg.vertical_scale,
-    )
-
-    floor_h = utils.meters_to_height(
-        cfg.floor_height,
+        cfg.wall_height.resolve(difficulty),
         cfg.vertical_scale,
     )
 
@@ -33,7 +29,7 @@ def _narrow_corridor(cfg: "NarrowCorridorCfg", difficulty) -> Terrain:
         inner,
         corridor_px,
         wall_h,
-        floor_h,
+        base_h,
     )
 
     x = int(0.5 * nx)
@@ -54,11 +50,11 @@ def _build_narrow_corridor(
     height,
     corridor_px,
     wall_h,
-    floor_h,
+    base_h,
 ):
     nx, ny = height.shape
 
-    height[:, :] = floor_h
+    height[:, :] = base_h
 
     wall_width = (nx - corridor_px) // 2
 
@@ -72,13 +68,10 @@ def _build_narrow_corridor(
 @dataclass
 class NarrowCorridorCfg(TerrainCfg):
     # Corridor
-    corridor_width: tuple[float, float] = field(default=(0.5, 0.5), metadata={"range":True})
+    corridor_width: tuple[float, float] = field(default=(0.5, 0.5), metadata={"class":Range})
 
     # Walls
-    wall_height: tuple[float, float] = field(default=(0.5, 0.5), metadata={"range":True})
-
-    # Floor
-    floor_height: float = 0.0
+    wall_height: tuple[float, float] = field(default=(0.5, 0.5), metadata={"class":Range})
 
     @property
     def func(self):

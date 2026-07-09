@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 
 from terrainslib.common import Terrain, TerrainCfg
 from terrainslib.common import utils
+from terrainslib.parameters import *
 
 from .registry import register_terrain
 
@@ -15,11 +16,11 @@ def _stairs(cfg: "StairsCfg", difficulty) -> Terrain:
     height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
     step_px = max(
-        1, utils.meters_to_pixels(cfg.step_width.at(difficulty), cfg.horizontal_scale)
+        1, utils.meters_to_pixels(cfg.step_width.resolve(difficulty), cfg.horizontal_scale)
     )
-    step_h = utils.meters_to_height(cfg.step_height.at(difficulty), cfg.vertical_scale)
+    step_h = utils.meters_to_height(cfg.step_height.resolve(difficulty), cfg.vertical_scale)
 
-    n_steps = _build_stairs(inner, cfg.direction, step_px, step_h, base_h)
+    n_steps = _build_stairs(inner, cfg.direction.resolve(difficulty), step_px, step_h, base_h)
 
     x = int(0.5 * nx)
     y = int(0.05 * ny)
@@ -72,11 +73,13 @@ def _build_stairs(height, direction, step_px, step_h, base_h):
 @dataclass
 class StairsCfg(TerrainCfg):
 
-    step_width: tuple[float, float] = field(default=(0.5, 0.5), metadata={"range":True})
-    step_height: tuple[float, float] = field(default=(0.2, 0.2), metadata={"range":True})
+    step_width: tuple[float, float] = field(default=(0.5, 0.5), metadata={"class":Range})
+    step_height: tuple[float, float] = field(default=(0.2, 0.2), metadata={"class":Range})
 
-    base_height: float = 0.0
-    direction: str = "y"
+    direction: dict = field(
+        default_factory=lambda: {"choices": ["x", "y"], "probs": [0.5, 0.5]},
+        metadata={"class": Choice}
+    )
 
     @property
     def func(self):

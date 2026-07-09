@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 
 from terrainslib.common import Terrain, TerrainCfg, build_centered_layout
 from terrainslib.common import utils
+from terrainslib.parameters import *
 
 from .registry import register_terrain
 
@@ -16,13 +17,13 @@ def _hurdles(cfg: "HurdlesCfg", difficulty) -> Terrain:
     height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
     hurdle_px = utils.meters_to_pixels(
-        cfg.hurdle_width.at(difficulty), cfg.horizontal_scale
+        cfg.hurdle_width.resolve(difficulty), cfg.horizontal_scale
     )
     spacing_px = utils.meters_to_pixels(
-        cfg.spacing.at(difficulty), cfg.horizontal_scale
+        cfg.spacing.resolve(difficulty), cfg.horizontal_scale
     )
     hurdle_h = utils.meters_to_height(
-        cfg.hurdle_height.at(difficulty), cfg.vertical_scale
+        cfg.hurdle_height.resolve(difficulty), cfg.vertical_scale
     )
 
     _build_hurdle_course(
@@ -77,10 +78,9 @@ def _build_hurdle_course(
 @dataclass
 class HurdlesCfg(TerrainCfg):
 
-    hurdle_width: tuple[float, float] = field(default=(0.5, 0.5), metadata={"range":True})
-    hurdle_height: tuple[float, float] = field(default=(0.5, 0.5), metadata={"range":True})
-    spacing: tuple[float, float] = field(default=(0.5, 0.5), metadata={"range":True})
-    base_height: float = 0.0
+    hurdle_width: tuple[float, float] = field(default=(0.5, 0.5), metadata={"class":Range})
+    hurdle_height: tuple[float, float] = field(default=(0.5, 0.5), metadata={"class":Range})
+    spacing: tuple[float, float] = field(default=(0.5, 0.5), metadata={"class":Range})
 
     @property
     def func(self):

@@ -12,7 +12,7 @@ spacing_w: [0.05, 0.15]
 spacing_l: [0.05, 0.15]
 
 stone_height: 0.0
-base_height: -0.25
+pit_height: -0.4
 
 border_width: 1.0
 border_height: 0.0
