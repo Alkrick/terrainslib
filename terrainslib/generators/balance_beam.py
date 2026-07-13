@@ -65,11 +65,11 @@ def _build_balance_beam(
 @dataclass
 class BalanceBeamCfg(TerrainCfg):
 
-    beam_width: tuple[float, float] = field(default=(0.3, 0.3), metadata={"class":Range})
-    beam_height: tuple[float, float] = field(default=(0.3, 0.3), metadata={"class":Range})
+    beam_width: Range = parameter(Range(0.3, 0.3))
+    beam_height: Range = parameter(Range(0.3, 0.3))
 
     # Pit
-    pit_height: float = field(default=(-0.4), metadata={"class":Constant})
+    pit_height: Constant = parameter(Constant(-0.3))
 
     @property
     def func(self):

@@ -78,9 +78,9 @@ def _build_hurdle_course(
 @dataclass
 class HurdlesCfg(TerrainCfg):
 
-    hurdle_width: tuple[float, float] = field(default=(0.5, 0.5), metadata={"class":Range})
-    hurdle_height: tuple[float, float] = field(default=(0.5, 0.5), metadata={"class":Range})
-    spacing: tuple[float, float] = field(default=(0.5, 0.5), metadata={"class":Range})
+    hurdle_width: Range = parameter(Range(0.5, 0.5))
+    hurdle_height: Range = parameter(Range(0.5, 0.5))
+    spacing: Range = parameter(Range(0.5, 0.5))
 
     @property
     def func(self):

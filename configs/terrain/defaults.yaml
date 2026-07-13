@@ -1,17 +1,18 @@
-width: 10.0
-length: 10.0
+width: 8.0
+length: 8.0
 
-horizontal_scale: 0.05
-vertical_scale: 0.02
+horizontal_scale: 0.1
+vertical_scale: 0.005
 base_height: 0.0
 
 border_width: 0.0
 border_height: 0.0
 
 slope_threshold: 0.075
+seed: ${seed}
 
 post:
   roughness:
     enabled: true
-    amplitude: 1
+    amplitude: 0
     seed: ${seed}

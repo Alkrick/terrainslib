@@ -9,8 +9,13 @@ border_width: 1.0
 border_height: ${terrain.base_height}
 
 # Beam
-beam_width: [1.5, 0.3]
-beam_height: [0.0, 0.0]
+beam_width:
+  min: 1.5
+  max: 0.3
+beam_height: 
+  min: 0.0 
+  max: 0.0
 
 # Pit
-pit_height: -0.40
+pit_height: 
+  value: -0.40

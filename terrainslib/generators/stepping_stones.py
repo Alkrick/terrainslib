@@ -88,16 +88,15 @@ def _build_stepping_stones(
 @dataclass
 class SteppingStonesCfg(TerrainCfg):
 
-    stone_w: tuple[float, float] = field(default=(0.3, 0.3), metadata={"class":Range})
-    stone_l: tuple[float, float] = field(default=(0.3, 0.3), metadata={"class":Range})
-    spacing_w : tuple[float, float] = field(default=(0.3, 0.3), metadata={"class":Range})
-    spacing_l : tuple[float, float] = field(default=(0.3, 0.3), metadata={"class":Range})
+    stone_w: Range = parameter(Range(0.3, 0.3))
+    stone_l: Range = parameter(Range(0.3, 0.3))
+    spacing_w : Range = parameter(Range(0.3, 0.3))
+    spacing_l : Range = parameter(Range(0.3, 0.3))
 
-    stone_height: float = field(default=0.0, metadata={"class":Constant})
+    stone_height: Constant = parameter(Constant(0.2))
+    pit_height: Constant = parameter(Constant(-0.3))
     
-    pit_height: float = field(default=-0.4, metadata={"class":Constant})
-    
-    randomize_pos: bool = field(default=False, metadata={"class": Constant})
+    randomize_pos: Constant = parameter(Constant(False))
 
     @property
     def func(self):

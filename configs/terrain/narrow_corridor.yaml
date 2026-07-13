@@ -8,7 +8,11 @@ border_width: 1.0
 border_height: ${terrain.base_height}
 
 # Corridor
-corridor_width: [1.2, 0.4] 
+corridor_width: 
+  min: 1.2
+  max: 0.4
 
 # Walls
-wall_height: [0.50, 0.50]
+wall_height: 
+  min: 0.50
+  max: 0.50

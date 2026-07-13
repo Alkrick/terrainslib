@@ -5,16 +5,25 @@ defaults:
   - _self_
 
 name: stepping_stones
-
-stone_w: [0.8, 0.3]
-stone_l: [0.8, 0.3]
-spacing_w: [0.05, 0.15]
-spacing_l: [0.05, 0.15]
-
-stone_height: 0.0
-pit_height: -0.4
-
 border_width: 1.0
 border_height: 0.0
 
-randomize_pos: true
+stone_w: 
+  min: 0.8
+  max: 0.3
+stone_l: 
+  min: 0.8
+  max: 0.3
+spacing_w: 
+  min: 0.05
+  max: 0.15
+spacing_l: 
+  min: 0.05
+  max: 0.15
+
+stone_height: 
+  value: 0.0
+pit_height:
+  value: -0.4
+randomize_pos:
+  value: true

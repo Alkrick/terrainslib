@@ -68,10 +68,10 @@ def _build_narrow_corridor(
 @dataclass
 class NarrowCorridorCfg(TerrainCfg):
     # Corridor
-    corridor_width: tuple[float, float] = field(default=(0.5, 0.5), metadata={"class":Range})
+    corridor_width: Range = parameter(Range(0.3, 0.3))
 
     # Walls
-    wall_height: tuple[float, float] = field(default=(0.5, 0.5), metadata={"class":Range})
+    wall_height: Range = parameter(Range(0.3, 0.3))
 
     @property
     def func(self):

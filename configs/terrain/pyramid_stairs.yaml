@@ -1,10 +1,10 @@
-# configs/terrain/stairs.yaml
+# configs/terrain/pyramid_stairs.yaml
 
 defaults:
   -  defaults
   - _self_
 
-name: stairs
+name: pyramid_stairs
 
 border_width: 1.0
 border_height: ${terrain.base_height}
@@ -15,7 +15,9 @@ step_width:
 step_height:
   min: 0.05
   max: 0.2
+platform_size:
+  min: 2.0
+  max: 2.0
 
-direction:
-  choices: ["x", "y"]
-  probs: [0.5, 0.5]
+inverted: 
+  value: false

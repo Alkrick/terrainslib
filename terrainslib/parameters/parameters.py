@@ -1,82 +1,155 @@
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from __future__ import annotations
 
+from abc import ABC, abstractmethod
+from dataclasses import field, dataclass
+from copy import deepcopy
+from typing import Union, Any
 import numpy as np
+
+# def parameter(default):
+#     return field(default=default)
+
+
+def parameter(spec):
+    return field(default_factory=lambda: deepcopy(spec))
 
 class ParameterSpec(ABC):
 
     @abstractmethod
-    def resolve(self, difficulty):
-        """Compute the value of this parameter."""
+    def resolve(self, difficulty=0):
         ...
 
-    def __call__(self, difficulty):
+    def __call__(self, difficulty=0):
         return self.resolve(difficulty)
-    
+
     @classmethod
     def from_config(cls, value):
-        if isinstance(value, cls):
+
+        if isinstance(value, ParameterSpec):
             return value
 
         if isinstance(value, (tuple, list)):
-            return cls(*value)
+            return cls(
+                *[
+                    cls.from_config(v)
+                    for v in value
+                ]
+            )
 
         return cls(value)
 
     @classmethod
-    def _resolve(cls, value, difficulty):
+    def convert(cls, value):
+
+        if isinstance(value, ParameterSpec):
+            return value
+
+        if isinstance(value, dict):
+            return {
+                k: cls.convert(v)
+                for k, v in value.items()
+            }
+
+        if isinstance(value, (list, tuple)):
+            return [
+                cls.convert(v)
+                for v in value
+            ]
+
+        return value
+
+    @classmethod
+    def resolve_value(cls, value, difficulty=0):
         """Resolve nested ParameterSpecs recursively."""
         if isinstance(value, ParameterSpec):
             return value.resolve(difficulty)
         return value
 
+ParameterValue = Union[
+    float,
+    int,
+    bool,
+    ParameterSpec
+]
+@dataclass
 class Constant(ParameterSpec):
+    
+    value: Any
+    
     def __init__(self, value):
         self.value = value
         
-    def resolve(self, difficulty):
-        return self._resolve(self.value, difficulty)
+    def resolve(self, difficulty=0):
+        return self.resolve_value(self.value, difficulty)
     
+@dataclass
 class Range(ParameterSpec):
     
+    min: Any
+    max: Any
+    
     def __init__(self, min, max):
-        self.min = min
-        self.max = max
+        self.min = ParameterSpec.convert(min)
+        self.max = ParameterSpec.convert(max)
         
-    def resolve(self, difficulty):
+    def resolve(self, difficulty=0):
         
-        min = self._resolve(self.min, difficulty)
-        max = self._resolve(self.max, difficulty)
+        min = self.resolve_value(self.min, difficulty)
+        max = self.resolve_value(self.max, difficulty)
 
         return min + difficulty * (max - min)
+
+@dataclass 
+class Uniform(ParameterSpec):
+    
+    min: Any
+    max: Any
+    
+    def __init__(self, min, max):
+        self.min = ParameterSpec.convert(min)
+        self.max = ParameterSpec.convert(max)
+    
+    def resolve(self, difficulty=0):
         
+        min = self.resolve_value(self.min, difficulty)
+        max = self.resolve_value(self.max, difficulty)
         
+        return np.random.uniform(min, max)
+    
+@dataclass
 class Normal(ParameterSpec):
+    
+    mean: Any
+    std: Any
 
     def __init__(self, mean, std):
-        self.mean = mean
-        self.std = std
+        self.mean = ParameterSpec.convert(mean)
+        self.std =  ParameterSpec.convert(std)
 
-    def resolve(self, difficulty):
-        mean = self._resolve(self.mean, difficulty)
-        std = self._resolve(self.std, difficulty)
+    def resolve(self, difficulty=0):
+        mean = self.resolve_value(self.mean, difficulty)
+        std = self.resolve_value(self.std, difficulty)
 
         return np.random.normal(mean, std)
-    
+@dataclass
 class Choice(ParameterSpec):
+    
+    choices: list
+    probs: list
 
     def __init__(self, choices, probs=None):
-        self.choices = choices
+        self.choices = [
+            ParameterSpec.convert(c) for c in choices
+        ]
 
+        self.probs = probs
         if probs is None:
             self.probs = np.full(len(choices), 1 / len(choices))
-        else:
-            self.probs = probs
     
     @classmethod
     def from_config(cls, value):
         return cls(**value)
 
-    def resolve(self, difficulty):
+    def resolve(self, difficulty=0):
         choice = np.random.choice(self.choices, p=self.probs)
-        return self._resolve(choice, difficulty)
+        return self.resolve_value(choice, difficulty)

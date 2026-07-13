@@ -73,13 +73,10 @@ def _build_stairs(height, direction, step_px, step_h, base_h):
 @dataclass
 class StairsCfg(TerrainCfg):
 
-    step_width: tuple[float, float] = field(default=(0.5, 0.5), metadata={"class":Range})
-    step_height: tuple[float, float] = field(default=(0.2, 0.2), metadata={"class":Range})
+    step_width: Range = parameter(Range(0.5, 0.5))
+    step_height: Range = parameter(Range(0.2, 0.2))
 
-    direction: dict = field(
-        default_factory=lambda: {"choices": ["x", "y"], "probs": [0.5, 0.5]},
-        metadata={"class": Choice}
-    )
+    direction: Choice = parameter(Choice(["x", "y"], [0.5, 0.5]))
 
     @property
     def func(self):

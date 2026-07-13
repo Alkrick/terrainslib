@@ -1,0 +1,25 @@
+# configs/terrain/discrete_boxes.yaml
+
+defaults:
+  -  defaults
+  - _self_
+
+name: discrete_boxes
+
+border_width: 1.0
+border_height: ${terrain.base_height}
+
+box_size: 
+  # _target_: terrainslib.parameters.Range
+  min: 0.1
+  max: 0.3
+
+
+box_height: 
+  # _target_: terrainslib.parameters.Normal
+  min: 0.05
+  max: 0.15
+
+platform_size: 
+  # _target_: terrainslib.parameters.Constant
+  value: 1.0
