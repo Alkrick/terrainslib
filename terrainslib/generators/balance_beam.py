@@ -15,18 +15,10 @@ def _balance_beam(cfg: "BalanceBeamCfg", difficulty: float) -> Terrain:
 
     height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
-    beam_px = utils.meters_to_pixels(
-        cfg.beam_width.resolve(difficulty), cfg.horizontal_scale
-    )
-
-    beam_h = utils.meters_to_height(cfg.beam_height.resolve(difficulty), cfg.vertical_scale)
-    pit_h = utils.meters_to_height(cfg.pit_height.resolve(difficulty), cfg.vertical_scale)
-
     _build_balance_beam(
         inner,
-        beam_px,
-        beam_h,
-        pit_h,
+        cfg,
+        difficulty
     )
 
     x = int(0.5 * nx)
@@ -45,11 +37,14 @@ def _balance_beam(cfg: "BalanceBeamCfg", difficulty: float) -> Terrain:
 
 def _build_balance_beam(
     height,
-    beam_px,
-    beam_h,
-    pit_h,
+    cfg: "BalanceBeamCfg",
+    difficulty
 ):
     nx, ny = height.shape
+    
+    pit_h = cfg.m2h(cfg.pit_height.resolve(difficulty))
+    beam_h = cfg.m2h(cfg.beam_height.resolve(difficulty))
+    beam_px = cfg.m2p(cfg.beam_width.resolve(difficulty))
 
     height[:, :] = pit_h
 

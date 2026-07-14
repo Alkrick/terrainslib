@@ -10,14 +10,14 @@ border_width: 1.0
 border_height: ${terrain.base_height}
 
 step_width: 
-  min: 0.8
-  max: 0.5
+  low: 0.8
+  high: 0.5
 step_height:
-  min: 0.05
-  max: 0.2
+  low: 0.05
+  high: 0.2
 platform_size:
-  min: 2.0
-  max: 2.0
+  low: 2.0
+  high: 2.0
 
 inverted: 
   value: false

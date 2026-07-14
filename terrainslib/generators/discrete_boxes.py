@@ -5,7 +5,7 @@ import numpy as np
 from dataclasses import dataclass, field
 
 from terrainslib.common import Terrain, TerrainCfg
-from terrainslib.common import utils
+from terrainslib.common import utils, build_centered_layout
 from terrainslib.parameters import *
 
 from .registry import register_terrain
@@ -18,22 +18,7 @@ def _discrete_boxes(
 
     height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
-    print(cfg.box_size)
-    print(cfg.box_height)
-
-    box_size = utils.meters_to_pixels(
-        cfg.box_size.resolve(difficulty),
-        cfg.horizontal_scale,
-    )
-
-    platform_size = utils.meters_to_pixels(
-        cfg.platform_size.resolve(difficulty),
-        cfg.horizontal_scale,
-    )
-
-    rng = np.random.default_rng(cfg.seed)
-
-    _build_discrete_boxes(inner, box_size, platform_size, base_h, rng, cfg)
+    _build_discrete_boxes(inner, cfg, difficulty)
 
     x = nx // 2
     y = ny // 2
@@ -49,57 +34,66 @@ def _discrete_boxes(
     )
 
 
-def _build_discrete_boxes(height, box_size, platform_size, base_h, rng, cfg):
+def _build_discrete_boxes(
+    height: np.ndarray,
+    cfg: "DiscreteBoxesCfg",
+    difficulty: float,
+):
 
     ny, nx = height.shape
 
-    # initialize ground
-    height[:] = base_h
+    # Resolve terrain-wide parameters
+    box_size = cfg.m2p(cfg.box_size.resolve(difficulty))
+    platform_size = cfg.m2p(cfg.platform_size.resolve(difficulty))
 
+    layout = build_centered_layout(
+        total_x=nx,
+        total_y=ny,
+        feature_x=box_size,
+        feature_y=box_size,
+    )
+
+    # Central platform
     cx = nx // 2
     cy = ny // 2
 
-    # central platform
     px0 = cx - platform_size // 2
-    px1 = cx + platform_size // 2
+    px1 = px0 + platform_size
 
     py0 = cy - platform_size // 2
-    py1 = cy + platform_size // 2
+    py1 = py0 + platform_size
 
-    box_height = utils.meters_to_height(
-        cfg.box_height.resolve(),
-        cfg.vertical_scale,
-    )
+    for x0, y0 in layout:
 
-    height[py0:py1, px0:px1] = box_height
+        x1 = x0 + box_size
+        y1 = y0 + box_size
 
-    # grid around the platform
-    for y in range(0, ny, box_size):
+        # Skip cells overlapping the platform
+        if x0 < px1 and x1 > px0 and y0 < py1 and y1 > py0:
+            continue
 
-        for x in range(0, nx, box_size):
+        box_height = cfg.m2h(cfg.box_height.resolve(difficulty))
 
-            box_height = utils.meters_to_height(
-                cfg.box_height.resolve(),
-                cfg.vertical_scale,
-            )
+        height[y0:y1, x0:x1] = box_height
 
-            # skip platform
-            if x < px1 and x + box_size > px0 and y < py1 and y + box_size > py0:
-                continue
-
-            # random box height
-            h = rng.choice([0, box_height])
-
-            if h > 0:
-                height[y : y + box_size, x : x + box_size] = h
+    # Platform
+    platform_height = cfg.m2h(cfg.box_height.resolve(difficulty))
+    height[py0-1:py1+1, px0-1:px1+1] = platform_height
 
 
 @register_terrain("discrete_boxes")
 @dataclass
 class DiscreteBoxesCfg(TerrainCfg):
 
-    box_size: Uniform = parameter(Uniform(0.2, 0.4))
-    box_height: Uniform = parameter(Uniform(0.15, 0.15))
+    box_size: Uniform = parameter(Uniform(
+        Range(0.1, 0.2),
+        Range(0.3, 0.4)
+        ))
+    
+    box_height: Uniform = parameter(Uniform(
+        Range(0.05, 0.10),
+        Range(0.10, 0.15)
+        ))
 
     platform_size: Constant = parameter(Constant(1.0))
 

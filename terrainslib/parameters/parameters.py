@@ -85,19 +85,19 @@ class Constant(ParameterSpec):
 @dataclass
 class Range(ParameterSpec):
     
-    min: Any
-    max: Any
+    low: Any
+    high: Any
     
-    def __init__(self, min, max):
-        self.min = ParameterSpec.convert(min)
-        self.max = ParameterSpec.convert(max)
+    def __init__(self, low, high):
+        self.low = ParameterSpec.convert(low)
+        self.high = ParameterSpec.convert(high)
         
     def resolve(self, difficulty=0):
         
-        min = self.resolve_value(self.min, difficulty)
-        max = self.resolve_value(self.max, difficulty)
+        low = self.resolve_value(self.low, difficulty)
+        high = self.resolve_value(self.high, difficulty)
 
-        return min + difficulty * (max - min)
+        return low + difficulty * (high - low)
 
 @dataclass 
 class Uniform(ParameterSpec):

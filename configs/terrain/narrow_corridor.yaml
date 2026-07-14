@@ -9,10 +9,10 @@ border_height: ${terrain.base_height}
 
 # Corridor
 corridor_width: 
-  min: 1.2
-  max: 0.4
+  low: 1.2
+  high: 0.4
 
 # Walls
 wall_height: 
-  min: 0.50
-  max: 0.50
+  low: 0.50
+  high: 0.50

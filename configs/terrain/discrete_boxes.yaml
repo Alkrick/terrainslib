@@ -10,16 +10,21 @@ border_width: 1.0
 border_height: ${terrain.base_height}
 
 box_size: 
-  # _target_: terrainslib.parameters.Range
-  min: 0.1
-  max: 0.3
+  min: 
+    low: 0.1
+    high: 0.45
+  max: 
+    low: 0.3
+    high: 0.45
 
 
 box_height: 
-  # _target_: terrainslib.parameters.Normal
-  min: 0.05
-  max: 0.15
+  min:
+   low: 0.00
+   high: 0.05
+  max: 
+    low: 0.10
+    high: 0.20
 
 platform_size: 
-  # _target_: terrainslib.parameters.Constant
   value: 1.0

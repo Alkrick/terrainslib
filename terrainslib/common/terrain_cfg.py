@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import numpy as np
+
 from dataclasses import dataclass, field, fields
 from abc import abstractmethod
 from terrainslib.parameters import ParameterSpec
@@ -28,6 +30,12 @@ class TerrainCfg:
     seed: int = 0
 
     post: dict = field(default_factory=dict)
+    
+    def m2p(self, value):
+        return int(np.round(value/self.horizontal_scale))
+    
+    def m2h(self, value):
+        return (value/self.vertical_scale)
 
     def convert(self):
         for f in fields(self):

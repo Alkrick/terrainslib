@@ -9,17 +9,17 @@ border_width: 1.0
 border_height: 0.0
 
 stone_w: 
-  min: 0.8
-  max: 0.3
+  low: 0.8
+  high: 0.3
 stone_l: 
-  min: 0.8
-  max: 0.3
+  low: 0.8
+  high: 0.3
 spacing_w: 
-  min: 0.05
-  max: 0.15
+  low: 0.05
+  high: 0.15
 spacing_l: 
-  min: 0.05
-  max: 0.15
+  low: 0.05
+  high: 0.15
 
 stone_height: 
   value: 0.0
