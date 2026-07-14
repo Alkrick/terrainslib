@@ -120,6 +120,7 @@ def _build_box_mesh(
     return Geometry(
         vertices=np.asarray(vertices, dtype=np.float32),
         faces=np.asarray(faces, dtype=np.int32),
+        edges=None
     )
 
 

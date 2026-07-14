@@ -48,6 +48,24 @@ def _create_wireframe(mesh: o3d.geometry.TriangleMesh):
     return lines
 
 
+def _create_edge_points(points: np.ndarray, z_scale: float = 1.0):
+    """
+    Create Open3D point cloud from edge points.
+    """
+
+    points = points.copy()
+
+    points[:, 2] *= z_scale
+
+    cloud = o3d.geometry.PointCloud()
+
+    cloud.points = o3d.utility.Vector3dVector(points)
+
+    # Red color for visibility
+    cloud.paint_uniform_color([1.0, 0.0, 0.0])
+
+    return cloud
+
 # ------------------------------------------------------------
 # Main viewer
 # ------------------------------------------------------------
@@ -58,6 +76,7 @@ def draw_mesh(
     *,
     z_scale: float = 2.0,
     show_wireframe: bool = True,
+    show_edges=True,
     show_axes: bool = True,
     show_normals: bool = False,
 ):
@@ -107,6 +126,18 @@ def draw_mesh(
 
     if show_wireframe:
         geometries.append(_create_wireframe(mesh))
+        
+     # --------------------------------------------------------
+    # Edge points
+    # --------------------------------------------------------
+    if show_edges and terrain.mesh.edges is not None:
+
+        edge_cloud = _create_edge_points(
+            terrain.mesh.edges,
+            z_scale,
+        )
+
+        geometries.append(edge_cloud)
 
     # --------------------------------------------------------
     # Coordinate frame
@@ -125,7 +156,16 @@ def draw_mesh(
     # Render
     # --------------------------------------------------------
     
-    o3d.visualization.draw_geometries(  # type: ignore
-        geometries,
-        mesh_show_back_face=True,
-    )
+    vis = o3d.visualization.Visualizer()
+
+    vis.create_window()
+
+    for geom in geometries:
+        vis.add_geometry(geom)
+
+    opt = vis.get_render_option()
+    opt.point_size = 10.0
+    opt.mesh_show_back_face=True
+
+    vis.run()
+    vis.destroy_window()

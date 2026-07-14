@@ -8,6 +8,8 @@ class Geometry:
     vertices: np.ndarray
     faces: np.ndarray
     
+    edges: np.ndarray | None
+    
     metadata: dict = field(default_factory=dict)
     
     @classmethod
@@ -52,5 +54,34 @@ class Geometry:
         return cls(
             vertices=np.concatenate(vertices, axis=0),
             faces=np.concatenate(faces, axis=0),
+            edges=None,
             metadata=metadata,
+        )
+    
+    @classmethod
+    def _merge_vertices(cls, mesh: Geometry, tolerance=1e-5):
+    
+        vertices = mesh.vertices
+        faces = mesh.faces
+
+        rounded = np.round(
+            vertices / tolerance
+        ).astype(np.int64)
+
+        _, unique_indices, inverse = np.unique(
+            rounded,
+            axis=0,
+            return_index=True,
+            return_inverse=True,
+        )
+
+        vertices_new = vertices[unique_indices]
+
+        faces_new = inverse[faces]
+
+        return cls(
+            vertices=vertices_new,
+            faces=faces_new,
+            edges=None,
+            metadata=mesh.metadata,
         )

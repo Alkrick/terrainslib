@@ -392,4 +392,4 @@ def height_field_to_mesh(
         triangles[start + 1 : stop : 2, 1] = ind2
         triangles[start + 1 : stop : 2, 2] = ind3
 
-    return Geometry(vertices, triangles)
+    return Geometry(vertices, triangles, None)

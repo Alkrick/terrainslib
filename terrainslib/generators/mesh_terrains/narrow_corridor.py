@@ -159,6 +159,7 @@ def _build_narrow_corridor(
     return Geometry(
         vertices=np.asarray(vertices, dtype=np.float32),
         faces=np.asarray(faces, dtype=np.int32),
+        edges=None
     )
 
 

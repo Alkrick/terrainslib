@@ -273,6 +273,7 @@ def _build_inverted_pyramid_stairs(
     return Geometry(
         vertices=np.asarray(vertices, dtype=np.float32),
         faces=np.asarray(faces, dtype=np.int32),
+        edges=None
     )
 
 def _build_pyramid_stairs(
@@ -328,6 +329,7 @@ def _build_pyramid_stairs(
     return Geometry(
         vertices=np.asarray(vertices, dtype=np.float32),
         faces=np.asarray(faces, dtype=np.int32),
+        edges=None
     )
 
 
