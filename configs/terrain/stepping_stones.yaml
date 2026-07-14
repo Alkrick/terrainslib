@@ -8,16 +8,16 @@ name: stepping_stones
 border_width: 1.0
 border_height: 0.0
 
-stone_w: 
+stone_width: 
   low: 0.8
   high: 0.3
-stone_l: 
+stone_length: 
   low: 0.8
   high: 0.3
-spacing_w: 
+spacing_width: 
   low: 0.05
   high: 0.15
-spacing_l: 
+spacing_length: 
   low: 0.05
   high: 0.15
 

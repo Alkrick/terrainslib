@@ -1,7 +1,7 @@
 import numpy as np
 import open3d as o3d
 
-from terrainslib.common.mesh import terrain_to_mesh
+# from terrainslib.common.utils.mesh import terrain_to_mesh
 
 # ------------------------------------------------------------
 # Core utility: height → color
@@ -71,7 +71,7 @@ def draw_mesh(
     - Coordinate frame
     """
 
-    mesh_data = terrain_to_mesh(terrain)
+    mesh_data = terrain.mesh
 
     vertices = mesh_data.vertices.copy()
     faces = mesh_data.faces

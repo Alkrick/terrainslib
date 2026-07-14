@@ -1,5 +1,5 @@
 defaults:
-  - terrain: stairs
+  - terrain: pyramid_stairs
   - _self_
 
 seed: 0

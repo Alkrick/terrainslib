@@ -10,12 +10,14 @@ border_width: 1.0
 border_height: ${terrain.base_height}
 
 # Hurdles
-hurdle_width: 
+hurdle_depth: 
   low: 1.20
   high: 0.3
 hurdle_height: 
   low: 0.1
   high: 0.2
+hurdle_width:
+  value: 5.0
 spacing: 
   low: 2.0
   high: 0.5

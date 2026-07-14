@@ -98,6 +98,12 @@ class Range(ParameterSpec):
         high = self.resolve_value(self.high, difficulty)
 
         return low + difficulty * (high - low)
+    
+    def mid(self, difficulty):
+        low = self.resolve_value(self.low, difficulty)
+        high = self.resolve_value(self.high, difficulty)
+        
+        return (high+low)/2
 
 @dataclass 
 class Uniform(ParameterSpec):
@@ -115,6 +121,13 @@ class Uniform(ParameterSpec):
         max = self.resolve_value(self.max, difficulty)
         
         return np.random.uniform(min, max)
+    
+    def mid(self, difficulty):
+        
+        min = self.resolve_value(self.min, difficulty)
+        max = self.resolve_value(self.max, difficulty)
+        
+        return (max+min)/2
     
 @dataclass
 class Normal(ParameterSpec):

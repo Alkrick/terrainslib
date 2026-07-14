@@ -2,101 +2,154 @@
 Utilities for converting heightmap terrains into triangle meshes.
 """
 
-from dataclasses import dataclass
-
 import numpy as np
+from ..geometry import Geometry
 
-from terrainslib.common import Terrain
-
-
-@dataclass
-class Mesh:
+def add_box(
+    vertices,
+    faces,
+    x0,
+    y0,
+    z0,
+    sx,
+    sy,
+    sz,
+    resolution
+):
     """
-    Generic triangle mesh representation.
+    Creates a subdivided box mesh.
 
-    Attributes
-    ----------
-    vertices : (N, 3) float array
-        XYZ coordinates of every vertex.
-    faces : (M, 3) int array
-        Triangle indices into vertices.
+    All six faces are subdivided uniformly so that:
+    - roughness can be applied to any surface
+    - topology remains consistent
+    - adjacent geometry can share similar resolution
+
+    subdivisions=1 gives a normal box.
     """
+    
+    subdivisions_x = max(1, int(np.ceil(sx / resolution)))
+    subdivisions_y = max(1, int(np.ceil(sy / resolution)))
 
-    vertices: np.ndarray
-    faces: np.ndarray
+    vertex_map = {}
 
+    def add_vertex(x, y, z):
+        key = (x, y, z)
 
-def terrain_to_mesh(terrain: Terrain) -> Mesh:
-    """
-    Convert a Terrain heightmap into a triangle mesh.
+        if key not in vertex_map:
+            vertex_map[key] = len(vertices)
+            vertices.append([x, y, z])
 
-    Parameters
-    ----------
-    terrain
-        Input terrain.
+        return vertex_map[key]
 
-    Returns
-    -------
-    Mesh
-        Triangle mesh.
-    """
+    def add_quad(v0, v1, v2, v3):
+        faces.append([v0, v1, v2])
+        faces.append([v0, v2, v3])
 
-    vertices, faces = grid_to_box_mesh(
-        terrain.height, terrain.cfg.horizontal_scale, terrain.cfg.vertical_scale, 0.0
+    # --------------------------------------------------
+    # Bottom and top grids
+    # --------------------------------------------------
+
+    bottom = np.zeros(
+        (subdivisions_y + 1, subdivisions_x + 1),
+        dtype=int,
     )
-    
-    
-    
-    
 
-    # height = terrain.height.astype(np.float32)
+    top = np.zeros(
+        (subdivisions_y + 1, subdivisions_x + 1),
+        dtype=int,
+    )
 
-    # ny, nx = height.shape
+    for iy in range(subdivisions_y + 1):
 
-    # # ------------------------------------------------------------------
-    # # Vertices
-    # # ------------------------------------------------------------------
+        for ix in range(subdivisions_x + 1):
 
-    # xs = np.arange(nx, dtype=np.float32) * terrain.cfg.horizontal_scale
-    # ys = np.arange(ny, dtype=np.float32) * terrain.cfg.horizontal_scale
+            x = x0 + sx * ix / subdivisions_x
+            y = y0 + sy * iy / subdivisions_y
 
-    # X, Y = np.meshgrid(xs, ys)
+            bottom[iy, ix] = add_vertex(
+                x,
+                y,
+                z0,
+            )
 
-    # Z = height * terrain.cfg.vertical_scale
+            top[iy, ix] = add_vertex(
+                x,
+                y,
+                z0 + sz,
+            )
 
-    # vertices = np.column_stack(
-    #     (
-    #         X.ravel(),
-    #         Y.ravel(),
-    #         Z.ravel(),
-    #     )
-    # )
+    # --------------------------------------------------
+    # Bottom face
+    # --------------------------------------------------
 
-    # # ------------------------------------------------------------------
-    # # Faces
-    # # ------------------------------------------------------------------
+    for iy in range(subdivisions_y):
 
-    # faces = []
+        for ix in range(subdivisions_x):
 
-    # for y in range(ny - 1):
-    #     for x in range(nx - 1):
+            add_quad(
+                bottom[iy, ix],
+                bottom[iy, ix + 1],
+                bottom[iy + 1, ix + 1],
+                bottom[iy + 1, ix],
+            )
 
-    #         v00 = y * nx + x
-    #         v10 = v00 + 1
-    #         v01 = v00 + nx
-    #         v11 = v01 + 1
+    # --------------------------------------------------
+    # Top face
+    # --------------------------------------------------
 
-    #         # Triangle 1
-    #         faces.append((v00, v01, v10))
+    for iy in range(subdivisions_y):
 
-    #         # Triangle 2
-    #         faces.append((v10, v01, v11))
+        for ix in range(subdivisions_x):
 
-    # faces = np.asarray(faces, dtype=np.int32)
+            add_quad(
+                top[iy, ix],
+                top[iy + 1, ix],
+                top[iy + 1, ix + 1],
+                top[iy, ix + 1],
+            )
 
-    return Mesh(vertices, faces)
+    # --------------------------------------------------
+    # Side faces
+    # --------------------------------------------------
 
-import numpy as np
+    # Front / back (y direction)
+    for ix in range(subdivisions_x):
+
+        # front
+        add_quad(
+            bottom[0, ix],
+            bottom[0, ix + 1],
+            top[0, ix + 1],
+            top[0, ix],
+        )
+
+        # back
+        add_quad(
+            bottom[-1, ix + 1],
+            bottom[-1, ix],
+            top[-1, ix],
+            top[-1, ix + 1],
+        )
+
+    # Left / right (x direction)
+    for iy in range(subdivisions_y):
+
+        # left
+        add_quad(
+            bottom[iy + 1, 0],
+            bottom[iy, 0],
+            top[iy, 0],
+            top[iy + 1, 0],
+        )
+
+        # right
+        add_quad(
+            bottom[iy, -1],
+            bottom[iy + 1, -1],
+            top[iy + 1, -1],
+            top[iy, -1],
+        )
+
 
 
 def grid_to_box_mesh(
@@ -193,7 +246,7 @@ def grid_to_box_mesh(
 
 
 
-def convert_height_field_to_mesh(
+def height_field_to_mesh(
     height_field: np.ndarray,
     horizontal_scale: float,
     vertical_scale: float,
@@ -339,4 +392,4 @@ def convert_height_field_to_mesh(
         triangles[start + 1 : stop : 2, 1] = ind2
         triangles[start + 1 : stop : 2, 2] = ind3
 
-    return vertices, triangles
+    return Geometry(vertices, triangles)

@@ -27,28 +27,32 @@ class Layout:
 
 
 def build_centered_layout(
-    total_x: int,
-    total_y: int,
-    feature_x: int,
-    feature_y: int,
-    spacing_x: int = 0,
-    spacing_y: int = 0,
-) -> Layout:
+    total_x: float,
+    total_y: float,
+    feature_x: float,
+    feature_y: float,
+    spacing_x: float = 0,
+    spacing_y: float = 0,
+):
 
     stride_x = feature_x + spacing_x
     stride_y = feature_y + spacing_y
 
     if stride_x <= 0 or stride_y <= 0:
-        raise ValueError("Invalid cell")
+        raise ValueError("Invalid stride")
 
-    n_x = max(0, (total_x + spacing_x) // stride_x)
-    n_y = max(0, (total_y + spacing_y) // stride_y)
+
+    n_x = int((total_x + spacing_x) // stride_x)
+    n_y = int((total_y + spacing_y) // stride_y)
+
 
     used_x = n_x * stride_x - spacing_x
     used_y = n_y * stride_y - spacing_y
 
-    offset_x = (total_x - used_x) // 2
-    offset_y = (total_y - used_y) // 2
+
+    offset_x = (total_x - used_x) / 2
+    offset_y = (total_y - used_y) / 2
+
 
     return Layout(
         n_x=n_x,

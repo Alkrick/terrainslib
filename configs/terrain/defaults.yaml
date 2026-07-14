@@ -8,11 +8,11 @@ base_height: 0.0
 border_width: 0.0
 border_height: 0.0
 
-slope_threshold: 0.075
+slope_threshold: 0.75
 seed: ${seed}
 
 post:
   roughness:
-    enabled: true
+    enabled: false
     amplitude: 0
     seed: ${seed}

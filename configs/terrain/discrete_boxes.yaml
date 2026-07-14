@@ -6,7 +6,7 @@ defaults:
 
 name: discrete_boxes
 
-border_width: 1.0
+border_width: 0.5
 border_height: ${terrain.base_height}
 
 box_size: 

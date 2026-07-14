@@ -6,9 +6,10 @@ from dataclasses import dataclass, field
 
 from terrainslib.common import Terrain, TerrainCfg
 from terrainslib.common import utils
+from terrainslib.common.utils import mesh
 from terrainslib.parameters import *
 
-from .registry import register_terrain
+from ..registry import register_terrain
 
 
 def _balance_beam(cfg: "BalanceBeamCfg", difficulty: float) -> Terrain:
@@ -26,8 +27,11 @@ def _balance_beam(cfg: "BalanceBeamCfg", difficulty: float) -> Terrain:
     z = height[x, y]
 
     origin = np.array([x, y, z])
+    
+    geom = mesh.height_field_to_mesh(height, cfg.horizontal_scale, cfg.vertical_scale, cfg.slope_threshold)
 
     return Terrain(
+        mesh=geom,
         height=height,
         origin=origin,
         cfg=cfg,
@@ -48,10 +52,10 @@ def _build_balance_beam(
 
     height[:, :] = pit_h
 
-    x0 = (nx - beam_px) // 2
-    x1 = x0 + beam_px
+    y0 = (nx - beam_px) // 2
+    y1 = y0 + beam_px
 
-    height[:, x0:x1] = beam_h
+    height[y0:y1, :] = beam_h
 
     return height
 
@@ -67,5 +71,5 @@ class BalanceBeamCfg(TerrainCfg):
     pit_height: Constant = parameter(Constant(-0.3))
 
     @property
-    def func(self):
+    def generator(self):
         return _balance_beam

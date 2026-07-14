@@ -6,30 +6,20 @@ from dataclasses import dataclass, field
 
 from terrainslib.common import Terrain, TerrainCfg
 from terrainslib.common import utils
+from terrainslib.common.utils import mesh
 from terrainslib.parameters import *
 
-from .registry import register_terrain
+from ..registry import register_terrain
 
 
 def _pyramid_slope(cfg: "PyramidSlopeCfg", difficulty) -> Terrain:
 
     height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
-    slope = cfg.slope.resolve(difficulty)
-    platform = utils.meters_to_pixels(
-        cfg.platform_size.resolve(difficulty),
-        cfg.horizontal_scale,
-    )
-
-    inverted = cfg.inverted.resolve(difficulty)
-
     _build_pyramid_slope(
         inner,
-        slope,
-        platform,
-        cfg.horizontal_scale,
-        cfg.vertical_scale,
-        inverted,
+        cfg,
+        difficulty
     )
 
     x = nx // 2
@@ -38,9 +28,12 @@ def _pyramid_slope(cfg: "PyramidSlopeCfg", difficulty) -> Terrain:
 
     origin = np.array([x, y, z])
 
-    name = "pyramid_slope_inv" if inverted else "pyramid_slope"
+    name = "pyramid_slope_inv" if cfg.inverted.resolve(difficulty) else "pyramid_slope"
+    
+    geom = mesh.height_field_to_mesh(height, cfg.horizontal_scale, cfg.vertical_scale, cfg.slope_threshold)
 
     return Terrain(
+        mesh=geom,
         height=height,
         origin=origin,
         cfg=cfg,
@@ -50,12 +43,16 @@ def _pyramid_slope(cfg: "PyramidSlopeCfg", difficulty) -> Terrain:
 
 def _build_pyramid_slope(
     height: np.ndarray,
-    slope: float,
-    platform: int,
-    horizontal_scale: float,
-    vertical_scale: float,
-    inverted: bool,
+    cfg: "PyramidSlopeCfg",
+    difficulty
 ):
+    
+    slope = cfg.slope.resolve(difficulty)
+    platform = cfg.m2p(
+        cfg.platform_size.resolve(difficulty),
+    )
+
+    inverted = cfg.inverted.resolve(difficulty)
 
     ny, nx = height.shape
 
@@ -70,7 +67,7 @@ def _build_pyramid_slope(
 
     dist = np.maximum.outer(dy, dx)
 
-    height_per_pixel = slope * horizontal_scale / vertical_scale
+    height_per_pixel = slope * cfg.horizontal_scale / cfg.vertical_scale
 
     pyramid = dist * height_per_pixel
 
@@ -95,5 +92,5 @@ class PyramidSlopeCfg(TerrainCfg):
     inverted: Constant = parameter(Constant(False))
 
     @property
-    def func(self):
+    def generator(self):
         return _pyramid_slope

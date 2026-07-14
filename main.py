@@ -21,7 +21,7 @@ def main(cfg: DictConfig):
     terrain = create_terrain(cfg)
     
     print(terrain.metadata)
-    plot_heightmap(terrain)
+    # plot_heightmap(terrain)
     draw_mesh(terrain)
     # plot_3d_surface(terrain)
 

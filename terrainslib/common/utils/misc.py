@@ -3,7 +3,7 @@ import numpy as np
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .terrain_cfg import TerrainCfg
+    from ..terrain_cfg import TerrainCfg
 
 def meters_to_pixels(length, scale):
     return int(np.round(length / scale))
