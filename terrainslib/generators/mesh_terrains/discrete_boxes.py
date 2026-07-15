@@ -144,15 +144,15 @@ class DiscreteBoxesCfg(TerrainCfg):
 
     box_size: Uniform = parameter(
         Uniform(
-            Range(0.1, 0.2),
-            Range(0.3, 0.4),
+            Range(0.4, 0.2),
+            Range(0.3, 0.1),
         )
     )
 
     box_height: Uniform = parameter(
         Uniform(
-            Range(0.05, 0.10),
-            Range(0.10, 0.15),
+            Range(0.00, 0.05),
+            Range(0.10, 0.20),
         )
     )
 

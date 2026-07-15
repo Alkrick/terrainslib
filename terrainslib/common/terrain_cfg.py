@@ -14,18 +14,18 @@ class TerrainCfg:
 
     name: str = ""
 
-    width: float = 5.0
-    length: float = 5.0
+    width: float = 8.0
+    length: float = 8.0
 
     base_height: float = 0.0
 
-    border_width: float = 0.0
+    border_width: float = 1.0
     border_height: float = 0.0
 
     horizontal_scale: float = 0.1
     vertical_scale: float = 0.005
 
-    slope_threshold: float = 0.0
+    slope_threshold: float = 0.75
     
     seed: int = 0
 
@@ -36,23 +36,6 @@ class TerrainCfg:
     
     def m2h(self, value):
         return (value/self.vertical_scale)
-
-    def convert(self):
-        for f in fields(self):
-
-            param_cls = f.metadata.get("class")
-
-            if param_cls is None:
-                continue
-
-            value = getattr(self, f.name)
-
-            if not isinstance(value, ParameterSpec):
-                setattr(
-                    self,
-                    f.name,
-                    param_cls.from_config(value)
-                )
 
     @property
     @abstractmethod

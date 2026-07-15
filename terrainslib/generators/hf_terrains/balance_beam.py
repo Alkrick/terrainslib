@@ -64,11 +64,11 @@ def _build_balance_beam(
 @dataclass
 class BalanceBeamCfg(TerrainCfg):
 
-    beam_width: Range = parameter(Range(0.3, 0.3))
-    beam_height: Range = parameter(Range(0.3, 0.3))
+    beam_width: Range = parameter(Range(1.5, 0.3))
+    beam_height: Range = parameter(Range(0.0, 0.0))
 
     # Pit
-    pit_height: Constant = parameter(Constant(-0.3))
+    pit_height: Constant = parameter(Constant(-0.4))
 
     @property
     def generator(self):

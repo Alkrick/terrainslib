@@ -14,5 +14,4 @@ corridor_width:
 
 # Walls
 wall_height: 
-  low: 0.50
-  high: 0.50
+  value: 2.0

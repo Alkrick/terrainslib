@@ -338,15 +338,15 @@ def _build_pyramid_stairs(
 class PyramidStairsCfg(TerrainCfg):
 
     step_width: Range = parameter(
-        Range(0.5, 0.5)
+        Range(0.5, 0.3)
     )
 
     step_height: Range = parameter(
-        Range(0.5, 0.5)
+        Range(0.05, 0.15)
     )
 
     platform_size: Range = parameter(
-        Range(0.5, 0.5)
+        Range(2.0, 2.0)
     )
 
     inverted: Constant = parameter(

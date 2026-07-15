@@ -115,19 +115,19 @@ def _build_hurdle_mesh(
 class HurdlesCfg(TerrainCfg):
 
     hurdle_depth: Range = parameter(
-        Range(0.5, 0.5)
+        Range(1.2, 0.3)
     )
     
     hurdle_width: Constant = parameter(
-        Constant(3.5)
+        Constant(5.0)
     )
 
     hurdle_height: Range = parameter(
-        Range(0.5, 0.5)
+        Range(0.1, 0.2)
     )
 
     spacing: Range = parameter(
-        Range(0.5, 0.5)
+        Range(2.0, 0.5)
     )
 
 

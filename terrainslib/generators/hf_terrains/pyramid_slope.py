@@ -85,9 +85,9 @@ def _build_pyramid_slope(
 @dataclass
 class PyramidSlopeCfg(TerrainCfg):
 
-    slope: Range = parameter(Range(0.2, 0.6))
+    slope: Range = parameter(Range(0.2, 0.2))
 
-    platform_size: Range = parameter(Range(1.0, 1.0))
+    platform_size: Range = parameter(Range(2.0, 2.0))
 
     inverted: Constant = parameter(Constant(False))
 

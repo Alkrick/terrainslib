@@ -5,8 +5,6 @@ from terrainslib.generators.registry import REGISTRY
 
 
 def create_terrain(user_cfg):
-    print(user_cfg)
-    print(type(user_cfg))
     
     terrain = user_cfg.terrain.name
 
@@ -27,4 +25,5 @@ def create_terrain(user_cfg):
     
     terrain_cfg = OmegaConf.to_object(merged)    
     # terrain_cfg.convert()
+    print(terrain_cfg)
     return terrain_cfg.generate(0.9)

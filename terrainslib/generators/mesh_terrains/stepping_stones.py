@@ -149,17 +149,17 @@ def _build_stones(
 @dataclass
 class SteppingStonesCfg(TerrainCfg):
 
-    stone_width: Range = parameter(Range(0.3, 0.3))
+    stone_width: Range = parameter(Range(0.8, 0.3))
 
-    stone_length: Range = parameter(Range(0.3, 0.3))
+    stone_length: Range = parameter(Range(0.8, 0.3))
 
-    spacing_width: Range = parameter(Range(0.3, 0.3))
+    spacing_width: Range = parameter(Range(0.05, 0.15))
 
-    spacing_length: Range = parameter(Range(0.3, 0.3))
+    spacing_length: Range = parameter(Range(0.05, 0.15))
 
-    stone_height: Constant = parameter(Constant(0.2))
+    stone_height: Constant = parameter(Constant(0.0))
 
-    pit_height: Constant = parameter(Constant(-0.3))
+    pit_height: Constant = parameter(Constant(-0.4))
 
     randomize_pos: Constant = parameter(Constant(False))
 

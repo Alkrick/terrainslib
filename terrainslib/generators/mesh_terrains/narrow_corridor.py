@@ -168,11 +168,11 @@ def _build_narrow_corridor(
 class NarrowCorridorCfg(TerrainCfg):
 
     corridor_width: Range = parameter(
-        Range(0.3, 0.3)
+        Range(1.2, 0.4)
     )
 
-    wall_height: Range = parameter(
-        Range(0.3, 0.3)
+    wall_height: Constant = parameter(
+        Constant(2.0)
     )
 
     @property

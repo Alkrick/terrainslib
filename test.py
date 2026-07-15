@@ -11,8 +11,9 @@ def main(cfg: DictConfig):
         print(f"testing: {name}")
         
         cfg = cls()
-        cfg.convert()
-        terrain = cfg.generate(0.5)
+        
+        terrain = cfg.generate(0.9)
+        draw_mesh(terrain)
         
         # plot_heightmap(terrain)
     
