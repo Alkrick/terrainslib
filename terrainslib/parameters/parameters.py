@@ -19,9 +19,6 @@ class ParameterSpec(ABC):
     def resolve(self, difficulty=0):
         ...
 
-    def __call__(self, difficulty=0):
-        return self.resolve(difficulty)
-
     @classmethod
     def from_config(cls, value):
 
@@ -64,13 +61,6 @@ class ParameterSpec(ABC):
         if isinstance(value, ParameterSpec):
             return value.resolve(difficulty)
         return value
-
-ParameterValue = Union[
-    float,
-    int,
-    bool,
-    ParameterSpec
-]
 @dataclass
 class Constant(ParameterSpec):
     

@@ -16,19 +16,17 @@ def _balance_beam(cfg: "BalanceBeamCfg", difficulty: float) -> Terrain:
 
     height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
-    _build_balance_beam(
-        inner,
-        cfg,
-        difficulty
-    )
+    _build_balance_beam(inner, cfg, difficulty)
 
-    x = int(0.5 * nx)
-    y = int(0.05 * ny)
+    x = int(0.05 * nx)
+    y = int(0.5 * ny)
     z = height[x, y]
 
-    origin = np.array([x, y, z])
-    
-    geom = mesh.height_field_to_mesh(height, cfg.horizontal_scale, cfg.vertical_scale, cfg.slope_threshold)
+    origin = np.array([x * cfg.horizontal_scale, y * cfg.horizontal_scale, z])
+
+    geom = mesh.height_field_to_mesh(
+        height, cfg.horizontal_scale, cfg.vertical_scale, cfg.slope_threshold
+    )
 
     return Terrain(
         mesh=geom,
@@ -39,13 +37,9 @@ def _balance_beam(cfg: "BalanceBeamCfg", difficulty: float) -> Terrain:
     )
 
 
-def _build_balance_beam(
-    height,
-    cfg: "BalanceBeamCfg",
-    difficulty
-):
+def _build_balance_beam(height, cfg: "BalanceBeamCfg", difficulty):
     nx, ny = height.shape
-    
+
     pit_h = cfg.m2h(cfg.pit_height.resolve(difficulty))
     beam_h = cfg.m2h(cfg.beam_height.resolve(difficulty))
     beam_px = cfg.m2p(cfg.beam_width.resolve(difficulty))
@@ -55,7 +49,7 @@ def _build_balance_beam(
     y0 = (nx - beam_px) // 2
     y1 = y0 + beam_px
 
-    height[y0:y1, :] = beam_h
+    height[:, y0:y1] = beam_h
 
     return height
 

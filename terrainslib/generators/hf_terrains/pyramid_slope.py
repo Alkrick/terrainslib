@@ -16,21 +16,19 @@ def _pyramid_slope(cfg: "PyramidSlopeCfg", difficulty) -> Terrain:
 
     height, inner, nx, ny, base_h = utils.create_terrain_grid(cfg)
 
-    _build_pyramid_slope(
-        inner,
-        cfg,
-        difficulty
-    )
+    _build_pyramid_slope(inner, cfg, difficulty)
 
-    x = nx // 2
-    y = ny // 2
-    z = height[y, x]
+    x = int(0.5 * nx)
+    y = int(0.5 * ny)
+    z = height[y, x] * cfg.vertical_scale
 
-    origin = np.array([x, y, z])
+    origin = np.array([x * cfg.horizontal_scale, y * cfg.horizontal_scale, z])
 
     name = "pyramid_slope_inv" if cfg.inverted.resolve(difficulty) else "pyramid_slope"
-    
-    geom = mesh.height_field_to_mesh(height, cfg.horizontal_scale, cfg.vertical_scale, cfg.slope_threshold)
+
+    geom = mesh.height_field_to_mesh(
+        height, cfg.horizontal_scale, cfg.vertical_scale, cfg.slope_threshold
+    )
 
     return Terrain(
         mesh=geom,
@@ -41,12 +39,8 @@ def _pyramid_slope(cfg: "PyramidSlopeCfg", difficulty) -> Terrain:
     )
 
 
-def _build_pyramid_slope(
-    height: np.ndarray,
-    cfg: "PyramidSlopeCfg",
-    difficulty
-):
-    
+def _build_pyramid_slope(height: np.ndarray, cfg: "PyramidSlopeCfg", difficulty):
+
     slope = cfg.slope.resolve(difficulty)
     platform = cfg.m2p(
         cfg.platform_size.resolve(difficulty),

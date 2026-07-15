@@ -39,8 +39,8 @@ def compute_centered_tiling(
     return n, start_offset, pitch
 
 def create_terrain_grid(cfg: "TerrainCfg"):
-    nx = meters_to_pixels(cfg.width, cfg.horizontal_scale)
-    ny = meters_to_pixels(cfg.length, cfg.horizontal_scale)
+    nx = meters_to_pixels(cfg.width, cfg.horizontal_scale)+1
+    ny = meters_to_pixels(cfg.length, cfg.horizontal_scale)+1
     base_h = meters_to_height(cfg.base_height, cfg.vertical_scale)
 
     base = np.full((ny, nx), base_h, dtype=np.float32)

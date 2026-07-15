@@ -19,7 +19,7 @@ def _hurdles(
 
 
     # 1. Create base terrain
-    base_height, _, _, _, _ = utils.create_terrain_grid(cfg)
+    base_height, _, _, _, base_h = utils.create_terrain_grid(cfg)
 
     base_geometry = mesh.height_field_to_mesh(
         base_height,
@@ -45,9 +45,9 @@ def _hurdles(
 
     origin = np.array(
         [
-            cfg.width / 2,
             cfg.length * 0.05,
-            cfg.hurdle_height.resolve(difficulty),
+            cfg.width / 2,
+            base_h,
         ]
     )
 
@@ -79,26 +79,25 @@ def _build_hurdle_mesh(
 
     # Generate hurdles only inside the border
     layout = build_centered_layout(
-        total_x=1,
-        total_y=cfg.length - 2 * border,
-        feature_x=1,
-        feature_y=hurdle_depth,
-        spacing_x=0,
-        spacing_y=spacing,
+        total_x=cfg.width - 2 * border,
+        total_y=1,
+        feature_x=hurdle_depth,
+        feature_y=1,
+        spacing_x=spacing,
+        spacing_y=0,
     )
 
-    x0 = cfg.width / 2 - hurdle_width / 2
+    y0 = cfg.length / 2 - hurdle_width / 2
 
-    for _, y in layout:
-
+    for x, _ in layout:
         mesh.add_box(
             vertices,
             faces,
-            x0=x0,
-            y0=y + border,
+            x0=x+border,
+            y0=y0,
             z0=cfg.base_height,
-            sx=hurdle_width,
-            sy=hurdle_depth,
+            sx=hurdle_depth,
+            sy=hurdle_width,
             sz=hurdle_height,
             resolution=cfg.horizontal_scale,
         )

@@ -74,7 +74,7 @@ def _create_edge_points(points: np.ndarray, z_scale: float = 1.0):
 def draw_mesh(
     terrain,
     *,
-    z_scale: float = 2.0,
+    z_scale: float = 1.0,
     show_wireframe: bool = True,
     show_edges=True,
     show_axes: bool = True,
@@ -143,7 +143,7 @@ def draw_mesh(
     # Coordinate frame
     # --------------------------------------------------------
     if show_axes:
-        frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=1.0)
+        frame = o3d.geometry.TriangleMesh.create_coordinate_frame(origin=terrain.origin, size=1.0)
         geometries.append(frame)
 
     # --------------------------------------------------------

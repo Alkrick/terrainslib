@@ -39,12 +39,12 @@ def _pyramid_stairs(
     # 2. Stair geometry
     #
     if cfg.inverted.resolve(difficulty):
-        geometry = _build_inverted_pyramid_stairs(
+        geometry, z = _build_inverted_pyramid_stairs(
             cfg,
             difficulty,
         )
     else:
-        stair_geometry = _build_pyramid_stairs(
+        stair_geometry, z = _build_pyramid_stairs(
             cfg,
             difficulty,
         )
@@ -62,7 +62,7 @@ def _pyramid_stairs(
         [
             cfg.width / 2,
             cfg.length / 2,
-            cfg.step_height.resolve(difficulty),
+            z,
         ]
     )
 
@@ -274,7 +274,7 @@ def _build_inverted_pyramid_stairs(
         vertices=np.asarray(vertices, dtype=np.float32),
         faces=np.asarray(faces, dtype=np.int32),
         edges=None
-    )
+    ), -total_height
 
 def _build_pyramid_stairs(
     cfg: "PyramidStairsCfg",
@@ -290,8 +290,6 @@ def _build_pyramid_stairs(
     step_height = cfg.step_height.resolve(difficulty)
     platform_size = cfg.platform_size.resolve(difficulty)
 
-    inverted = cfg.inverted.resolve(difficulty)
-
     size_x = cfg.width - 2 * border
     size_y = cfg.length - 2 * border
 
@@ -304,10 +302,7 @@ def _build_pyramid_stairs(
 
         h = (level + 1) * step_height
 
-        if inverted:
-            z0 = cfg.base_height - h
-        else:
-            z0 = cfg.base_height
+        z0 = cfg.base_height
 
         mesh.add_box(
             vertices,
@@ -330,7 +325,7 @@ def _build_pyramid_stairs(
         vertices=np.asarray(vertices, dtype=np.float32),
         faces=np.asarray(faces, dtype=np.int32),
         edges=None
-    )
+    ), h
 
 
 @register_terrain("pyramid_stairs")

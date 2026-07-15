@@ -43,8 +43,8 @@ def _stepping_stones(cfg: "SteppingStonesCfg", difficulty):
 
     origin = np.array(
         [
-            cfg.width / 2,
             cfg.length * 0.05,
+            cfg.width / 2,
             cfg.stone_height.resolve(difficulty),
         ]
     )

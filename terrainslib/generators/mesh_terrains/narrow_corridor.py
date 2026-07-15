@@ -20,8 +20,8 @@ def _narrow_corridor(cfg: "NarrowCorridorCfg", difficulty):
 
     origin = np.array(
         [
-            cfg.width / 2,
             cfg.length * 0.05,
+            cfg.width / 2,
             cfg.base_height,
         ]
     )
@@ -119,8 +119,8 @@ def _build_narrow_corridor(
         x0=border,
         y0=border,
         z0=cfg.base_height,
-        sx=wall_width,
-        sy=cfg.length - 2 * border,
+        sx=cfg.length - 2 * border,
+        sy=wall_width,
         sz=wall_height,
         resolution=cfg.horizontal_scale,
     )
@@ -130,11 +130,11 @@ def _build_narrow_corridor(
     mesh.add_box(
         vertices,
         faces,
-        x0=cfg.width - border - wall_width,
-        y0=border,
+        x0=border,
+        y0=cfg.width - border - wall_width,
         z0=cfg.base_height,
-        sx=wall_width,
-        sy=cfg.length - 2 * border,
+        sx=cfg.length - 2 * border,
+        sy=wall_width,
         sz=wall_height,
         resolution=cfg.horizontal_scale,
     )
@@ -146,11 +146,11 @@ def _build_narrow_corridor(
     mesh.add_box(
         vertices,
         faces,
-        x0=border + wall_width,
-        y0=border,
+        x0=border,
+        y0=border + wall_width,
         z0=cfg.base_height,
-        sx=corridor_width,
-        sy=cfg.length - 2 * border,
+        sx=cfg.length - 2 * border,
+        sy=corridor_width,
         sz=0.01,
         resolution=cfg.horizontal_scale,
     )

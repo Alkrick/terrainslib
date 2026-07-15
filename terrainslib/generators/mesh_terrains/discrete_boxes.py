@@ -125,7 +125,7 @@ def _build_box_mesh(
 
 
 def _get_origin(
-    cfg,
+    cfg: "DiscreteBoxesCfg",
     difficulty,
 ):
 
@@ -133,7 +133,7 @@ def _get_origin(
         [
             cfg.width / 2,
             cfg.length / 2,
-            cfg.box_height.resolve(difficulty),
+            1.5* cfg.box_height.mid(difficulty),
         ]
     )
 

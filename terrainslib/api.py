@@ -26,4 +26,4 @@ def create_terrain(user_cfg):
     terrain_cfg = OmegaConf.to_object(merged)    
     # terrain_cfg.convert()
     print(terrain_cfg)
-    return terrain_cfg.generate(0.9)
+    return terrain_cfg.generate(1.0)
