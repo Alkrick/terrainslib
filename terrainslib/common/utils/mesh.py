@@ -103,9 +103,9 @@ def add_box(
 
             add_quad(
                 top[iy, ix],
-                top[iy + 1, ix],
-                top[iy + 1, ix + 1],
                 top[iy, ix + 1],
+                top[iy + 1, ix + 1],
+                top[iy + 1, ix],
             )
 
     # --------------------------------------------------
