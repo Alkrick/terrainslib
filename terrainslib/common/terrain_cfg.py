@@ -44,5 +44,5 @@ class TerrainCfg:
     
     def generate(self, difficulty=1.0):
         terrain = self.generator(self, difficulty) # Returns Terrain object
-        terrain = post_processing(terrain, self.post)
+        terrain = post_processing(terrain, self)
         return terrain

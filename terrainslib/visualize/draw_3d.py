@@ -54,6 +54,8 @@ def _create_edge_points(points: np.ndarray, z_scale: float = 1.0):
     """
 
     points = points.copy()
+    
+    points = points.reshape(-1,3)
 
     points[:, 2] *= z_scale
 
@@ -66,6 +68,46 @@ def _create_edge_points(points: np.ndarray, z_scale: float = 1.0):
 
     return cloud
 
+def _create_edge_segments(
+    segments: np.ndarray,
+    z_scale: float = 1.0,
+):
+    """
+    Create Open3D LineSet from edge segments.
+
+    Args:
+        segments:
+            Nx2x3 array containing line segment endpoints.
+
+    Returns:
+        Open3D LineSet
+    """
+
+    segments = segments.copy()
+
+    # Scale z if required
+    segments[:, :, 2] *= z_scale
+
+    # Flatten endpoints
+    points = segments.reshape(-1, 3)
+
+    # Create line indices
+    lines = np.arange(len(points)).reshape(-1, 2)
+
+    line_set = o3d.geometry.LineSet()
+
+    line_set.points = o3d.utility.Vector3dVector(points)
+    line_set.lines = o3d.utility.Vector2iVector(lines)
+
+    # Red color
+    line_set.colors = o3d.utility.Vector3dVector(
+        np.tile(
+            np.array([[1.0, 0.0, 0.0]]),
+            (len(lines), 1),
+        )
+    )
+
+    return line_set
 # ------------------------------------------------------------
 # Main viewer
 # ------------------------------------------------------------
@@ -130,14 +172,23 @@ def draw_mesh(
      # --------------------------------------------------------
     # Edge points
     # --------------------------------------------------------
-    if show_edges and terrain.mesh.edges is not None:
+    if show_edges and terrain.mesh.edges.size is not 0:
+        
+        print(type(terrain.mesh.edges))
 
         edge_cloud = _create_edge_points(
             terrain.mesh.edges,
             z_scale,
         )
+        
+        edge_segments = _create_edge_segments(
+            terrain.mesh.edges,
+            z_scale
+        )
 
         geometries.append(edge_cloud)
+        geometries.append(edge_segments)
+        
 
     # --------------------------------------------------------
     # Coordinate frame
@@ -164,7 +215,8 @@ def draw_mesh(
         vis.add_geometry(geom)
 
     opt = vis.get_render_option()
-    opt.point_size = 10.0
+    opt.point_size = 10
+    opt.line_width = 10
     opt.mesh_show_back_face=True
 
     vis.run()
